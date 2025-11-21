@@ -1,0 +1,50 @@
+CREATE DATABASE IF NOT EXISTS gestion_camiones
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE gestion_camiones;
+
+CREATE TABLE remolques (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    matricula VARCHAR(20) NOT NULL UNIQUE,
+    tipo VARCHAR(50),
+    capacidad INT,
+    carga INT
+);
+
+CREATE TABLE camiones (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    matricula VARCHAR(20) NOT NULL UNIQUE,
+    kms INT NOT NULL,
+    km_ultima_revision INT,
+    combustible INT,
+    cv INT,
+    consumo_medio DECIMAL(5,2),
+    inicio VARCHAR(100),
+    fin VARCHAR(100),
+    notas TEXT,
+    tiene_remolque BOOLEAN NOT NULL DEFAULT 0,
+    remolque_id INT UNSIGNED,
+    CONSTRAINT fk_camion_remolque
+        FOREIGN KEY (remolque_id) REFERENCES remolques(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE rutas (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    distancia INT NOT NULL,
+    duracion INT,
+    ubicacion VARCHAR(100),
+    ubicacion_recogida VARCHAR(100),
+    ubicacion_entrega VARCHAR(100),
+    recogida_lat DECIMAL(10,8),
+    recogida_lng DECIMAL(11,8),
+    entrega_lat DECIMAL(10,8),
+    entrega_lng DECIMAL(11,8),
+    camion_id INT UNSIGNED NOT NULL,
+    CONSTRAINT fk_ruta_camion
+        FOREIGN KEY (camion_id) REFERENCES camiones(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
