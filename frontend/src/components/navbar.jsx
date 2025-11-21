@@ -1,69 +1,66 @@
-import { useEffect, useRef, useState } from 'react'
-import logoImage from '../assets/on-truck_logo_black.png'
-import avatarImage from '../assets/navbar_login_icon.png'
-import './Navbar.css'
+import { useEffect, useRef, useState } from "react";
+import logoImage from "../assets/on-truck_logo_black.png";
+import avatarImage from "../assets/navbar_login_icon.png";
+import "./Navbar.css";
 
 const navItems = [
-  { label: 'Vehículos', href: '#vehiculos' },
-  { label: 'Rutas', href: '#rutas' },
-  { label: 'Estadísticas', href: '#estadisticas' },
-]
+  { label: "Vehículos", href: "#vehiculos" },
+  { label: "Rutas", href: "#rutas" },
+  { label: "Estadísticas", href: "#estadisticas" },
+];
 
 function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const menuRef = useRef(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activePath, setActivePath] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof document === "undefined") {
+      return false;
+    }
+
+    return document.body.classList.contains("theme-dark");
+  });
+  const menuRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsMenuOpen(false)
+        setIsMenuOpen(false);
       }
     }
 
-    document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
-  }, [])
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
 
   useEffect(() => {
-    document.body.classList.toggle('theme-dark', isDarkMode)
-  }, [isDarkMode])
+    if (typeof document === "undefined") {
+      return;
+    }
 
-  const handleLogin = () => {
-    setIsAuthenticated(true)
-    console.log('Usuario autenticado (demo)')
-  }
-
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-    console.log('Sesión cerrada (demo)')
-  }
-
-  const handleToggleTheme = () => {
-    setIsDarkMode((prev) => !prev)
-  }
-
-  const userMenuItems = [
-    isAuthenticated
-      ? { label: 'Logout', action: handleLogout }
-      : { label: 'Login', action: handleLogin },
-    { label: 'Registro', action: () => console.log('Ir a registro') },
-    {
-      label: isDarkMode ? 'Modo claro' : 'Modo oscuro',
-      action: handleToggleTheme,
-    },
-  ]
+    document.body.classList.toggle("theme-dark", isDarkMode);
+  }, [isDarkMode]);
 
   return (
     <header className="navbar">
-      <a href="/" className="navbar__brand" aria-label="Volver al inicio">
+      <a
+        href="/"
+        className="navbar__brand"
+        aria-label="Volver al inicio"
+        onClick={() => setActivePath(null)}
+      >
         <img src={logoImage} alt="Logo On Truck" className="navbar__logo" />
       </a>
 
       <nav className="navbar__links">
         {navItems.map((item) => (
-          <a key={item.label} href={item.href} className="navbar__link">
+          <a
+            key={item.label}
+            href={item.href}
+            className={`navbar__link ${
+              activePath === item.href ? "navbar__link--active" : ""
+            }`}
+            onClick={() => setActivePath(item.href)}
+          >
             {item.label}
           </a>
         ))}
@@ -82,14 +79,21 @@ function Navbar() {
 
         {isMenuOpen && (
           <div className="navbar__dropdown" role="menu">
-            {userMenuItems.map((menuItem) => (
+            {[
+              { label: "Login", action: () => console.log("Ir a login") },
+              { label: "Registro", action: () => console.log("Ir a registro") },
+              {
+                label: isDarkMode ? "Modo claro" : "Modo oscuro",
+                action: () => setIsDarkMode((prev) => !prev),
+              },
+            ].map((menuItem) => (
               <button
                 key={menuItem.label}
                 type="button"
                 className="navbar__dropdown-item"
                 onClick={() => {
-                  menuItem.action()
-                  setIsMenuOpen(false)
+                  menuItem.action();
+                  setIsMenuOpen(false);
                 }}
               >
                 {menuItem.label}
@@ -99,7 +103,7 @@ function Navbar() {
         )}
       </div>
     </header>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

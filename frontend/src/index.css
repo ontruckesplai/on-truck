@@ -1,5 +1,6 @@
 :root {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -8,39 +9,29 @@
   -moz-osx-font-smoothing: grayscale;
 
   --color-bg: #f5f7fb;
-  --color-surface: #ffffff;
-  --color-surface-border: rgba(15, 23, 42, 0.08);
-  --color-text: #1b2a3b;
-  --color-text-muted: #4b5565;
-  --color-eyebrow: #7c8ba1;
-  --color-placeholder-border: rgba(15, 23, 42, 0.2);
   --color-navbar-bg: #ffffff;
   --color-navbar-shadow: rgba(15, 23, 42, 0.08);
+  --color-text: #1b2a3b;
   --color-link: #475569;
-  --color-avatar-border: rgba(15, 23, 42, 0.15);
+  --color-link-active: #1d4ed8;
   --color-dropdown-shadow: rgba(15, 23, 42, 0.15);
   --color-dropdown-hover: rgba(37, 99, 235, 0.12);
-  --color-button-ghost-border: rgba(4, 16, 34, 0.2);
 }
 
 body.theme-dark {
-  --color-bg: #05070c;
-  --color-surface: rgba(11, 29, 44, 0.85);
-  --color-surface-border: rgba(255, 255, 255, 0.1);
-  --color-text: #e9edf4;
-  --color-text-muted: rgba(233, 237, 244, 0.8);
-  --color-eyebrow: #6fe2ff;
-  --color-placeholder-border: rgba(255, 255, 255, 0.2);
-  --color-navbar-bg: rgba(4, 8, 15, 0.92);
+  --color-bg: #3c3c3c;
+  --color-navbar-bg: #282828;
   --color-navbar-shadow: rgba(0, 0, 0, 0.35);
+  --color-text: #e9edf4;
   --color-link: rgba(255, 255, 255, 0.8);
-  --color-avatar-border: rgba(255, 255, 255, 0.4);
+  --color-link-active: #93c5fd;
   --color-dropdown-shadow: rgba(0, 0, 0, 0.35);
   --color-dropdown-hover: rgba(0, 132, 255, 0.12);
-  --color-button-ghost-border: rgba(255, 255, 255, 0.3);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -56,6 +47,12 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }
 
 #root {
