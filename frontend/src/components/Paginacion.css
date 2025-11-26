@@ -1,0 +1,34 @@
+/* src/components/Paginacion.css */
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.paginacion button {
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  padding: 8px 16px;
+  margin: 0 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.paginacion button:hover:not(:disabled) {
+  background-color: #f1f5f9;
+}
+
+.paginacion button:disabled {
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.paginacion button.active {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+  font-weight: bold;
+}

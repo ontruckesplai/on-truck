@@ -1,0 +1,34 @@
+import { NavLink } from "react-router-dom";
+import { useFleet } from "../context/FleetContext";
+import "./Sidebar.css";
+
+function Sidebar() {
+    const { darkMode } = useFleet();
+
+    return (
+        <aside className={`sidebar ${darkMode ? "dark" : ""}`}>
+            <div className="sidebar-header">
+                <h2>OnTruck</h2>
+            </div>
+            <nav className="sidebar-nav">
+                <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
+                    Panel de Control
+                </NavLink>
+                <NavLink to="/vehiculos" className={({ isActive }) => (isActive ? "active" : "")}>
+                    Vehículos
+                </NavLink>
+                <NavLink to="/rutas" className={({ isActive }) => (isActive ? "active" : "")}>
+                    Rutas
+                </NavLink>
+                <NavLink to="/conductores" className={({ isActive }) => (isActive ? "active" : "")}>
+                    Conductores
+                </NavLink>
+                <NavLink to="/configuracion" className={({ isActive }) => (isActive ? "active" : "")}>
+                    Configuración
+                </NavLink>
+            </nav>
+        </aside>
+    );
+}
+
+export default Sidebar;

@@ -1,12 +1,4 @@
+/* App.css is now minimal as styles are distributed */
 .app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-bg);
-  color: var(--color-text);
-}
-
-.app__content {
-  display: flex;
-  flex: 1;
+  /* Removed styles that are now handled by MainLayout */
 }
