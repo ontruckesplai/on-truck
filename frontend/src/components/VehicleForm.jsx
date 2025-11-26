@@ -2,82 +2,67 @@ import { useState } from "react";
 import { useFleet } from "../context/FleetContext";
 import "./VehicleForm.css";
 
-function VehicleForm({ onClose }) {
-  const { addVehicle, conductores } = useFleet();
-  const [nuevoVehiculo, setNuevoVehiculo] = useState({
-    tipo: "camion",
+function VehicleForm({ onClose, initialData = null }) {
+  const { addVehicle, updateVehicle, deleteVehicle } = useFleet();
+
+  const [formData, setFormData] = useState(initialData || {
     matricula: "",
-    modelo: "",
-    kilometros: "",
-    proxima_revision: "",
-    potencia: "",
-    capacidad_carga: "",
-    estado: "Disponible",
-    conductor_id: "",
+    kms: "",
+    km_ultima_revision: "",
+    cv: "",
+    consumo_medio: "",
+    notas: ""
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNuevoVehiculo({ ...nuevoVehiculo, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!nuevoVehiculo.matricula || !nuevoVehiculo.modelo) return;
+    if (!formData.matricula) return;
 
-    // Convertir a números
+    // Convertir a números donde sea necesario
     const vehiculoData = {
-      ...nuevoVehiculo,
-      kilometros: Number(nuevoVehiculo.kilometros),
-      proxima_revision: Number(nuevoVehiculo.proxima_revision),
-      conductor_id: nuevoVehiculo.conductor_id ? Number(nuevoVehiculo.conductor_id) : null,
+      ...formData,
+      kms: Number(formData.kms),
+      km_ultima_revision: formData.km_ultima_revision ? Number(formData.km_ultima_revision) : null,
+      cv: formData.cv ? Number(formData.cv) : null,
+      consumo_medio: formData.consumo_medio ? Number(formData.consumo_medio) : null,
     };
 
-    addVehicle(vehiculoData);
+    if (initialData) {
+      updateVehicle(initialData.id, vehiculoData);
+    } else {
+      addVehicle(vehiculoData);
+    }
     onClose();
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(`¿Estás seguro de eliminar el vehículo ${initialData.matricula}?`)) {
+      deleteVehicle(initialData.id);
+      onClose();
+    }
   };
 
   return (
     <div className="vehicle-drawer-overlay" onClick={onClose}>
       <div className="vehicle-drawer" onClick={(e) => e.stopPropagation()}>
         <div className="drawer-header">
-          <h3>Nuevo Vehículo</h3>
+          <h3>{initialData ? "Editar Vehículo" : "Nuevo Vehículo"}</h3>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
         <form onSubmit={handleSubmit} className="vehicle-form">
-          {/* Selector de tipo */}
-          <div className="form-group">
-            <label>Tipo de Vehículo</label>
-            <select
-              name="tipo"
-              value={nuevoVehiculo.tipo}
-              onChange={handleInputChange}
-            >
-              <option value="camion">Camión</option>
-              <option value="furgoneta">Furgoneta</option>
-              <option value="remolque">Remolque</option>
-            </select>
-          </div>
 
-          {/* Campos comunes */}
           <div className="form-group">
-            <label>Matrícula</label>
+            <label>Matrícula *</label>
             <input
               name="matricula"
               type="text"
-              value={nuevoVehiculo.matricula}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Modelo</label>
-            <input
-              name="modelo"
-              type="text"
-              value={nuevoVehiculo.modelo}
+              value={formData.matricula}
               onChange={handleInputChange}
               required
             />
@@ -85,84 +70,76 @@ function VehicleForm({ onClose }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Kilometraje Actual</label>
+              <label>Kilómetros</label>
               <input
-                name="kilometros"
+                name="kms"
                 type="number"
-                value={nuevoVehiculo.kilometros}
+                value={formData.kms}
                 onChange={handleInputChange}
               />
             </div>
             <div className="form-group">
-              <label>Próxima Revisión (km)</label>
+              <label>Última Revisión (km)</label>
               <input
-                name="proxima_revision"
+                name="km_ultima_revision"
                 type="number"
-                value={nuevoVehiculo.proxima_revision}
+                value={formData.km_ultima_revision}
                 onChange={handleInputChange}
               />
             </div>
           </div>
 
-          {/* Asignación de Conductor */}
-          {nuevoVehiculo.tipo !== "remolque" && (
+          <div className="form-row">
             <div className="form-group">
-              <label>Conductor Asignado</label>
-              <select
-                name="conductor_id"
-                value={nuevoVehiculo.conductor_id}
-                onChange={handleInputChange}
-              >
-                <option value="">-- Sin asignar --</option>
-                {conductores.map((c) => (
-                  <option
-                    key={c.id}
-                    value={c.id}
-                    disabled={!c.carnet_valido || (c.estado === "Ocupado" && c.id !== nuevoVehiculo.conductor_id)}
-                  >
-                    {c.nombre} {c.estado === "Ocupado" ? "(Ocupado)" : ""} {!c.carnet_valido ? "(Carnet Caducado)" : ""}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Campos condicionales */}
-          {(nuevoVehiculo.tipo === "camion" ||
-            nuevoVehiculo.tipo === "furgoneta") && (
-              <div className="form-group">
-                <label>Potencia</label>
-                <input
-                  name="potencia"
-                  type="text"
-                  placeholder="ej: 450cv"
-                  value={nuevoVehiculo.potencia}
-                  onChange={handleInputChange}
-                />
-              </div>
-            )}
-
-          {nuevoVehiculo.tipo === "remolque" && (
-            <div className="form-group">
-              <label>Capacidad de Carga</label>
+              <label>Potencia (CV)</label>
               <input
-                name="capacidad_carga"
-                type="text"
-                placeholder="ej: 24t"
-                value={nuevoVehiculo.capacidad_carga}
+                name="cv"
+                type="number"
+                value={formData.cv}
                 onChange={handleInputChange}
               />
             </div>
-          )}
+            <div className="form-group">
+              <label>Consumo Medio (L/100km)</label>
+              <input
+                name="consumo_medio"
+                type="number"
+                step="0.1"
+                value={formData.consumo_medio}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
 
-          {/* Botones */}
-          <div className="form-actions">
-            <button type="button" onClick={onClose} className="btn-cancel">
-              Cancelar
-            </button>
-            <button type="submit" className="btn-save">
-              Guardar Vehículo
-            </button>
+          <div className="form-group">
+            <label>Notas</label>
+            <textarea
+              name="notas"
+              rows="3"
+              value={formData.notas}
+              onChange={handleInputChange}
+            ></textarea>
+          </div>
+
+          <div className="form-actions" style={{ justifyContent: 'space-between' }}>
+            {initialData && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="btn-delete"
+                style={{ backgroundColor: 'var(--danger-bg)', color: 'var(--danger-text)', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                Eliminar Vehículo
+              </button>
+            )}
+            <div style={{ display: 'flex', gap: '10px', marginLeft: 'auto' }}>
+              <button type="button" onClick={onClose} className="btn-cancel">
+                Cancelar
+              </button>
+              <button type="submit" className="btn-save">
+                {initialData ? "Guardar Cambios" : "Crear Vehículo"}
+              </button>
+            </div>
           </div>
         </form>
       </div>

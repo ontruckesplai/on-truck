@@ -11,264 +11,55 @@ export const useFleet = () => {
 };
 
 export const FleetProvider = ({ children }) => {
-    // --- Estado Inicial (Mock Data) ---
-    const [vehiculos, setVehiculos] = useState([
-        {
-            id: 1,
-            matricula: "1234-GJK",
-            modelo: "Volvo FH16",
-            estado: "En Ruta",
-            kilometros: 120000,
-            proxima_revision: 120500, // Alerta Mantenimiento (< 1000km)
-            tipo: "camion",
-            potencia: "750cv",
-            remolque: "R-5432-BBB",
-            conductor_id: 1,
-        },
-        {
-            id: 2,
-            matricula: "5678-LMN",
-            modelo: "Scania R450",
-            estado: "Taller",
-            kilometros: 340500,
-            proxima_revision: 350000,
-            tipo: "camion",
-            potencia: "450cv",
-            conductor_id: null,
-        },
-        {
-            id: 3,
-            matricula: "9988-PPL",
-            modelo: "Mercedes Actros",
-            estado: "Disponible",
-            kilometros: 15000,
-            proxima_revision: 30000,
-            tipo: "camion",
-            potencia: "510cv",
-            conductor_id: null,
-        },
-        {
-            id: 4,
-            matricula: "1122-XYZ",
-            modelo: "Renault Kangoo",
-            estado: "Disponible",
-            kilometros: 85000,
-            proxima_revision: 90000,
-            tipo: "furgoneta",
-            potencia: "110cv",
-            conductor_id: null,
-        },
-        {
-            id: 5,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 6,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 5,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 6,
-            matricula: "9988-PPL",
-            modelo: "Mercedes Actros",
-            estado: "Disponible",
-            kilometros: 15000,
-            proxima_revision: 30000,
-            tipo: "camion",
-            potencia: "510cv",
-            conductor_id: null,
-        },
-        {
-            id: 7,
-            matricula: "9988-PPL",
-            modelo: "Mercedes Actros",
-            estado: "Disponible",
-            kilometros: 15000,
-            proxima_revision: 30000,
-            tipo: "camion",
-            potencia: "510cv",
-            conductor_id: null,
-        },
-        {
-            id: 8,
-            matricula: "9988-PPL",
-            modelo: "Mercedes Actros",
-            estado: "Disponible",
-            kilometros: 15000,
-            proxima_revision: 30000,
-            tipo: "camion",
-            potencia: "510cv",
-            conductor_id: null,
-        },
-        {
-            id: 9,
-            matricula: "9988-PPL",
-            modelo: "Mercedes Actros",
-            estado: "Disponible",
-            kilometros: 15000,
-            proxima_revision: 30000,
-            tipo: "camion",
-            potencia: "510cv",
-            conductor_id: null,
-        },
-        {
-            id: 10,
-            matricula: "9988-PPL",
-            modelo: "Mercedes Actros",
-            estado: "Disponible",
-            kilometros: 15000,
-            proxima_revision: 30000,
-            tipo: "camion",
-            potencia: "510cv",
-            conductor_id: null,
-        },
-        {
-            id: 11,
-            matricula: "9988-PPL",
-            modelo: "Mercedes Actros",
-            estado: "Disponible",
-            kilometros: 15000,
-            proxima_revision: 30000,
-            tipo: "camion",
-            potencia: "510cv",
-            conductor_id: null,
-        },
-        {
-            id: 12,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 13,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 14,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 15,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 16,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 17,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 18,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 19,
-            matricula: "R-5432-BBB",
-            modelo: "Lecitrailer",
-            estado: "En Ruta",
-            kilometros: 25000,
-            proxima_revision: 30000,
-            tipo: "remolque",
-            capacidad_carga: "24t",
-            conductor_id: null, // Remolques no tienen conductor directo, van con el camión
-        },
-        {
-            id: 20,
-            matricula: "9988-PPL",
-            modelo: "Mercedes Actros",
-            estado: "Disponible",
-            kilometros: 15000,
-            proxima_revision: 30000,
-            tipo: "camion",
-            potencia: "510cv",
-            conductor_id: null,
-        },
-        {
-            id: 21,
-            matricula: "9988-PPL",
-            modelo: "Mercedes Actros",
-            estado: "Disponible",
-            kilometros: 15000,
-            proxima_revision: 30000,
-            tipo: "camion",
-            potencia: "510cv",
-            conductor_id: null,
-        },
+    // --- Estado Inicial ---
+    const [vehiculos, setVehiculos] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    ]);
+    // Cargar vehículos desde el backend al montar el componente
+    useEffect(() => {
+        const fetchVehiculos = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/camiones');
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    // Mapear datos del backend usando SOLO los campos que existen en MySQL
+                    const transformedData = result.data.map(camion => ({
+                        id: camion.id,
+                        matricula: camion.matricula,
+                        kms: camion.kms,
+                        km_ultima_revision: camion.kmUltimaRevision,
+                        combustible: camion.combustible,
+                        cv: camion.cv,
+                        consumo_medio: camion.consumoMedio,
+                        inicio: camion.inicio,
+                        fin: camion.fin,
+                        notas: camion.notas,
+                        tiene_remolque: camion.tieneRemolque,
+                        remolque_id: camion.remolque?.id || null,
+                        // Campos calculados para el frontend
+                        tipo: "camion",
+                        estado: determinarEstado(camion)
+                    }));
+                    setVehiculos(transformedData);
+                }
+            } catch (error) {
+                console.error('Error al cargar vehículos:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchVehiculos();
+    }, []);
+
+    // Función auxiliar para determinar el estado basado en los datos
+    const determinarEstado = (camion) => {
+        const kmHastaRevision = (camion.kmUltimaRevision + 10000) - camion.kms;
+        if (kmHastaRevision < 1000) return "Taller";
+        if (camion.combustible && camion.combustible > 50) return "Disponible";
+        return "Disponible";
+    };
 
     const [rutas, setRutas] = useState([
         {
@@ -329,18 +120,72 @@ export const FleetProvider = ({ children }) => {
 
     // --- Acciones ---
 
-    const addVehicle = (vehiculo) => {
-        setVehiculos([...vehiculos, { ...vehiculo, id: Date.now() }]);
+    // --- Acciones ---
+
+    // Función auxiliar para transformar datos de backend a frontend
+    const transformBackendToFrontend = (camion) => ({
+        id: camion.id,
+        matricula: camion.matricula,
+        kms: camion.kms,
+        km_ultima_revision: camion.kmUltimaRevision,
+        combustible: camion.combustible,
+        cv: camion.cv,
+        consumo_medio: camion.consumoMedio,
+        inicio: camion.inicio,
+        fin: camion.fin,
+        notas: camion.notas,
+        tiene_remolque: camion.tieneRemolque,
+        remolque_id: camion.remolque?.id || null,
+        tipo: "camion",
+        estado: determinarEstado(camion)
+    });
+
+    const addVehicle = async (vehiculo) => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/camiones', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vehiculo)
+            });
+            const result = await response.json();
+            if (result.success) {
+                const newVehicle = transformBackendToFrontend(result.data);
+                setVehiculos([...vehiculos, newVehicle]);
+            }
+        } catch (error) {
+            console.error('Error al crear vehículo:', error);
+        }
     };
 
-    const updateVehicle = (id, updatedData) => {
-        setVehiculos(
-            vehiculos.map((v) => (v.id === id ? { ...v, ...updatedData } : v))
-        );
+    const updateVehicle = async (id, updatedData) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/camiones/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+            const result = await response.json();
+            if (result.success) {
+                const updatedVehicle = transformBackendToFrontend(result.data);
+                setVehiculos(vehiculos.map(v => v.id === id ? updatedVehicle : v));
+            }
+        } catch (error) {
+            console.error('Error al actualizar vehículo:', error);
+        }
     };
 
-    const deleteVehicle = (id) => {
-        setVehiculos(vehiculos.filter((v) => v.id !== id));
+    const deleteVehicle = async (id) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/camiones/${id}`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+            if (result.success) {
+                setVehiculos(vehiculos.filter((v) => v.id !== id));
+            }
+        } catch (error) {
+            console.error('Error al eliminar vehículo:', error);
+        }
     };
 
     const assignDriver = (vehiculoId, conductorId) => {
