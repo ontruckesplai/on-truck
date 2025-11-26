@@ -1,0 +1,9 @@
+# config/packages/nelmio_cors.yaml
+
+nelmio_cors:
+    defaults:
+        # 🟢 CAMBIA EL PUERTO 3000 POR EL 5173
+        allow_origin: ['http://localhost:5173'] 
+        allow_methods: ['POST','GET','OPTIONS','PUT','DELETE']
+        allow_headers: ['Content-Type', 'Authorization']
+        max_age: 3600

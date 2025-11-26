@@ -1,0 +1,138 @@
+.tarjeta-vehiculo {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.tarjeta-vehiculo:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tarjeta-vehiculo.alerta-mantenimiento {
+    border: 2px solid #e74c3c;
+}
+
+/* --- Header --- */
+.tarjeta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.tipo-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.estado-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* --- Body --- */
+.tarjeta-body {
+    margin-bottom: 1rem;
+}
+
+.matricula {
+    font-size: 1.4rem;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.modelo {
+    margin: 0.25rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* --- Mantenimiento Badge --- */
+.mantenimiento-badge {
+    background-color: #fce4e4;
+    color: #c0392b;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* --- Footer --- */
+.tarjeta-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-primary);
+    padding: 0.75rem;
+    border-radius: 8px;
+}
+
+.info-item {
+    flex: 1;
+    text-align: center;
+}
+
+.separator {
+    width: 1px;
+    height: 24px;
+    background-color: var(--border-color);
+    margin: 0 0.5rem;
+}
+
+.info-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+/* --- Remolque Info --- */
+.remolque-info {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* --- Styling especifico para Remolques --- */
+.tarjeta-remolque {
+    background-color: var(--card-bg);
+    border-left: 5px solid #95a5a6;
+}
+
+.tarjeta-remolque .matricula {
+    font-size: 1.2rem;
+}
+
+.tarjeta-remolque .capacidad {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}

@@ -1,0 +1,145 @@
+.tarjeta-ruta {
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ruta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ruta-id {
+    font-weight: bold;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.ruta-estado {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.ruta-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+}
+
+.ruta-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.point-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+}
+
+.point-dot.origin {
+    background-color: var(--accent-secondary);
+    border: 2px solid var(--info-bg);
+}
+
+.point-dot.destination {
+    background-color: var(--danger-text);
+    border: 2px solid var(--danger-bg);
+}
+
+.ruta-line {
+    width: 2px;
+    height: 20px;
+    background-color: var(--border-color);
+    margin-left: 5px;
+    margin-top: -4px;
+    margin-bottom: -4px;
+}
+
+.point-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.point-label {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.point-value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.ruta-details {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--bg-tertiary);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.detail-value {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.ruta-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.ruta-truck {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.btn-map {
+    background-color: var(--bg-tertiary);
+    color: var(--accent-primary);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+}
+
+.btn-map:hover {
+    background-color: var(--info-bg);
+}
