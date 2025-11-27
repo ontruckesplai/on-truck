@@ -103,16 +103,12 @@
 
 .form-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid var(--border-color);
-}
-
-.right-actions {
-  display: flex;
-  gap: 10px;
+  gap: 15px;
 }
 
 .btn-delete-form {
@@ -131,32 +127,33 @@
 }
 
 .btn-cancel {
-  flex: 1;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 6px;
   border: 1px solid var(--border-color);
   background: var(--bg-primary);
   color: var(--text-primary);
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background-color: var(--bg-secondary);
 }
 
 .vehicle-form .form-actions .btn-save {
-  flex: 2;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 10px 30px;
+  border-radius: 6px;
   border: none;
   background-color: #2563eb !important;
-  /* Hardcoded blue to ensure visibility */
   color: white !important;
   font-weight: 600;
   cursor: pointer;
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: block;
   transition: background-color 0.2s;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
 .vehicle-form .form-actions .btn-save:hover {
   background-color: #1d4ed8 !important;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
 }

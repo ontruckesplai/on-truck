@@ -39,6 +39,10 @@ class CamionController extends ApiController
         $camion->setInicio($data['inicio'] ?? null);
         $camion->setFin($data['fin'] ?? null);
         $camion->setNotas($data['notas'] ?? null);
+        $camion->setModelo($data['modelo'] ?? null);
+        if (isset($data['fecha_itv'])) {
+            $camion->setFechaItv(new \DateTime($data['fecha_itv']));
+        }
         $camion->setTieneRemolque(false); // Por defecto
 
         $this->em->persist($camion);
@@ -66,6 +70,10 @@ class CamionController extends ApiController
         if (isset($data['inicio'])) $camion->setInicio($data['inicio']);
         if (isset($data['fin'])) $camion->setFin($data['fin']);
         if (isset($data['notas'])) $camion->setNotas($data['notas']);
+        if (isset($data['modelo'])) $camion->setModelo($data['modelo']);
+        if (isset($data['fecha_itv'])) {
+            $camion->setFechaItv(new \DateTime($data['fecha_itv']));
+        }
 
         $this->em->flush();
 

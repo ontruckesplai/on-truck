@@ -7,10 +7,13 @@ function VehicleForm({ onClose, initialData = null }) {
 
   const [formData, setFormData] = useState(initialData || {
     matricula: "",
+    tipo: "camion",
+    modelo: "",
     kms: "",
     km_ultima_revision: "",
     cv: "",
     consumo_medio: "",
+    fecha_itv: "",
     notas: ""
   });
 
@@ -55,17 +58,45 @@ function VehicleForm({ onClose, initialData = null }) {
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
+
+
         <form onSubmit={handleSubmit} className="vehicle-form">
 
           <div className="form-group">
-            <label>Matrícula *</label>
-            <input
-              name="matricula"
-              type="text"
-              value={formData.matricula}
+            <label>Tipo de Vehículo</label>
+            <select
+              name="tipo"
+              value={formData.tipo}
               onChange={handleInputChange}
-              required
-            />
+            >
+              <option value="camion">Camión</option>
+              <option value="furgoneta" disabled>Furgoneta (Próximamente)</option>
+              <option value="remolque" disabled>Remolque (Próximamente)</option>
+            </select>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Modelo</label>
+              <input
+                name="modelo"
+                type="text"
+                value={formData.modelo}
+                onChange={handleInputChange}
+                placeholder="Ej: Volvo FH 500"
+              />
+            </div>
+            <div className="form-group">
+              <label>Matrícula *</label>
+              <input
+                name="matricula"
+                type="text"
+                value={formData.matricula}
+                onChange={handleInputChange}
+                required
+                placeholder="0000-XXX"
+              />
+            </div>
           </div>
 
           <div className="form-row">
@@ -112,6 +143,16 @@ function VehicleForm({ onClose, initialData = null }) {
           </div>
 
           <div className="form-group">
+            <label>Fecha ITV</label>
+            <input
+              name="fecha_itv"
+              type="date"
+              value={formData.fecha_itv}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="form-group">
             <label>Notas</label>
             <textarea
               name="notas"
@@ -121,25 +162,22 @@ function VehicleForm({ onClose, initialData = null }) {
             ></textarea>
           </div>
 
-          <div className="form-actions" style={{ justifyContent: 'space-between' }}>
+          <div className="form-actions">
             {initialData && (
               <button
                 type="button"
                 onClick={handleDelete}
-                className="btn-delete"
-                style={{ backgroundColor: 'var(--danger-bg)', color: 'var(--danger-text)', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer' }}
+                className="btn-delete-form"
               >
-                Eliminar Vehículo
+                Eliminar
               </button>
             )}
-            <div style={{ display: 'flex', gap: '10px', marginLeft: 'auto' }}>
-              <button type="button" onClick={onClose} className="btn-cancel">
-                Cancelar
-              </button>
-              <button type="submit" className="btn-save">
-                {initialData ? "Guardar Cambios" : "Crear Vehículo"}
-              </button>
-            </div>
+            <button type="button" onClick={onClose} className="btn-cancel">
+              Atrás
+            </button>
+            <button type="submit" className="btn-save">
+              {initialData ? "Guardar Cambios" : "Crear Vehículo"}
+            </button>
           </div>
         </form>
       </div>

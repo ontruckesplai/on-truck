@@ -1,22 +1,33 @@
 .tarjeta-vehiculo {
     background-color: var(--card-bg);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    border: 1px solid transparent;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .tarjeta-vehiculo:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent-primary);
 }
 
-.tarjeta-vehiculo.alerta-mantenimiento {
-    border: 2px solid #e74c3c;
+/* --- Bordes de Alerta (Prioridad Visual) --- */
+.tarjeta-vehiculo.borde-rojo {
+    border: 2px solid #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+.tarjeta-vehiculo.borde-naranja {
+    border: 2px solid #f97316;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
 }
 
 /* --- Header --- */
@@ -24,115 +35,152 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
 }
 
-.tipo-badge {
+.tipo-info {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.9rem;
     color: var(--text-secondary);
 }
 
+.icono-vehiculo {
+    display: flex;
+    align-items: center;
+    color: var(--accent-primary);
+}
+
+.tipo-texto {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* --- Badges de Estado --- */
 .estado-badge {
     padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.estado-disponible {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 /* --- Body --- */
 .tarjeta-body {
-    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .matricula {
-    font-size: 1.4rem;
-    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
     color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.5px;
 }
 
 .modelo {
-    margin: 0.25rem 0 0;
+    font-size: 1rem;
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    margin: 0;
+    font-weight: 500;
 }
 
-/* --- Mantenimiento Badge --- */
-.mantenimiento-badge {
-    background-color: #fce4e4;
-    color: #c0392b;
-    padding: 0.5rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+/* --- Contenedor de Alertas --- */
+.alertas-container {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 0.5rem;
 }
 
-/* --- Footer --- */
-.tarjeta-footer {
+.alerta-badge {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    background-color: var(--bg-primary);
-    padding: 0.75rem;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
     border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
-.info-item {
+.alerta-badge.alerta-roja {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.alerta-badge.alerta-naranja {
+    background-color: rgba(249, 115, 22, 0.1);
+    color: #f97316;
+    border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.alerta-icono {
+    font-size: 1rem;
+}
+
+/* --- Footer Grid --- */
+.tarjeta-footer-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    background-color: var(--bg-primary);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: auto;
+}
+
+.dato-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
     flex: 1;
     text-align: center;
 }
 
-.separator {
-    width: 1px;
-    height: 24px;
-    background-color: var(--border-color);
-    margin: 0 0.5rem;
-}
-
-.info-label {
-    display: block;
-    font-size: 0.75rem;
+/* --- Notas Preview --- */
+.notas-preview {
+    font-size: 0.85rem;
     color: var(--text-secondary);
-    margin-bottom: 0.25rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+
+    /* Truncate to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
 }
 
-.info-value {
-    margin: 0;
+.notas-label {
     font-weight: 600;
     color: var(--text-primary);
-    font-size: 0.9rem;
+    margin-right: 0.25rem;
 }
 
-/* --- Remolque Info --- */
-.remolque-info {
-    margin-top: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
+.dato-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
     color: var(--text-secondary);
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--border-color);
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
-/* --- Styling especifico para Remolques --- */
-.tarjeta-remolque {
-    background-color: var(--card-bg);
-    border-left: 5px solid #95a5a6;
-}
-
-.tarjeta-remolque .matricula {
-    font-size: 1.2rem;
-}
-
-.tarjeta-remolque .capacidad {
+.dato-valor {
     font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-top: 0.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
 }

@@ -37,6 +37,8 @@ export const FleetProvider = ({ children }) => {
                         notas: camion.notas,
                         tiene_remolque: camion.tieneRemolque,
                         remolque_id: camion.remolque?.id || null,
+                        modelo: camion.modelo,
+                        fecha_itv: camion.fechaItv,
                         // Campos calculados para el frontend
                         tipo: "camion",
                         estado: determinarEstado(camion)
@@ -136,6 +138,8 @@ export const FleetProvider = ({ children }) => {
         notas: camion.notas,
         tiene_remolque: camion.tieneRemolque,
         remolque_id: camion.remolque?.id || null,
+        modelo: camion.modelo,
+        fecha_itv: camion.fechaItv,
         tipo: "camion",
         estado: determinarEstado(camion)
     });
