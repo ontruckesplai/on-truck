@@ -7,6 +7,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity]
+#[ORM\Table(name: "users")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -14,14 +15,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length:180, unique:true)]
+    #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column(type:"json")]
+    #[ORM\Column(type: "json")]
     private array $roles = [];
 
     #[ORM\Column]
     private string $password;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $password_plain = null;
+
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $lastLogin = null;
+
+    // --------------------
+    // Getters / Setters
+    // --------------------
 
     public function getId(): ?int
     {
@@ -47,7 +58,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = "ROLE_USER";
+
+        if (!in_array("ROLE_USER", $roles)) {
+            $roles[] = "ROLE_USER";
+        }
+
         return array_unique($roles);
     }
 
@@ -68,8 +83,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getPasswordPlain(): ?string
+    {
+        return $this->password_plain;
+    }
+
+    public function setPasswordPlain(?string $passwordPlain): self
+    {
+        $this->password_plain = $passwordPlain;
+        return $this;
+    }
+
     public function eraseCredentials(): void
     {
-        // No usamos datos sensibles temporales
+        // Nada que borrar
+    }
+
+    public function getLastLogin(): ?\DateTimeInterface
+    {
+        return $this->lastLogin;
+    }
+
+    public function setLastLogin(?\DateTimeInterface $lastLogin): self
+    {
+        $this->lastLogin = $lastLogin;
+        return $this;
     }
 }

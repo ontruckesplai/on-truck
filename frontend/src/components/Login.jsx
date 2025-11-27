@@ -1,36 +1,56 @@
 import { useState } from "react";
 
-export default function Login({ setUser }) {
+function Login({ setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // Error de login
 
-  async function handleLogin(e) {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
-    const response = await fetch("http://127.0.0.1:8000/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      alert("Credenciales incorrectas");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError("Correo o contraseña incorrecto");
+      } else {
+        localStorage.setItem("token", data.token);
+        setUser({ email });
+      }
+    } catch (err) {
+      setError("Error al conectar con el servidor");
     }
-
-    const data = await response.json();
-    localStorage.setItem("token", data.token);
-
-    const payload = JSON.parse(atob(data.token.split(".")[1]));
-    setUser(payload); // Esto hace que App.jsx muestre la pantalla de inicio automáticamente
-  }
+  };
 
   return (
     <form onSubmit={handleLogin}>
-      <h2>Iniciar sesión</h2>
-      <input type="email" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button type="submit">Entrar</button>
+      {error && <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>}
+      <input
+        type="email"
+        placeholder="Correo"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        style={{ marginBottom: "0.8rem" }}
+      />
+      <input
+        type="password"
+        placeholder="Contraseña"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        style={{ marginBottom: "1rem" }}
+      />
+      <button type="submit">Iniciar sesión</button>
     </form>
   );
 }
+
+export default Login;

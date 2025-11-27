@@ -1,36 +1,67 @@
 import { useState } from "react";
 
-export default function Register({ setUser }) {
+function Register({ setUser, setIsLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState(""); // Mensaje de éxito/error
+  const [messageColor, setMessageColor] = useState(""); // Color del mensaje
 
-  async function handleRegister(e) {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage("");
 
-    const response = await fetch("http://127.0.0.1:8000/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:8000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      alert("Error al registrarse");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage(data.error || "Registro incorrecto");
+        setMessageColor("red");
+      } else {
+        setMessage("Registrado correctamente");
+        setMessageColor("green");
+        setEmail("");
+        setPassword("");
+
+        // Después de un segundo, cambiar al login
+        setTimeout(() => {
+          setMessage("");
+          setIsLogin(true);
+        }, 1000);
+      }
+    } catch (err) {
+      setMessage("Error al conectar con el servidor");
+      setMessageColor("red");
     }
-
-    const data = await response.json();
-    localStorage.setItem("token", data.token);
-
-    const payload = JSON.parse(atob(data.token.split(".")[1]));
-    setUser(payload); // Redirige automáticamente al inicio
-  }
+  };
 
   return (
     <form onSubmit={handleRegister}>
-      <h2>Registrarse</h2>
-      <input type="email" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
+      {message && <p style={{ color: messageColor, marginBottom: "1rem" }}>{message}</p>}
+      <input
+        type="email"
+        placeholder="Correo"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        style={{ marginBottom: "0.8rem" }}
+      />
+      <input
+        type="password"
+        placeholder="Contraseña"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        style={{ marginBottom: "1rem" }}
+      />
       <button type="submit">Registrarse</button>
     </form>
   );
 }
+
+export default Register;

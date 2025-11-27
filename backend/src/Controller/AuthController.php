@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -6,10 +7,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
-class RegisterController extends AbstractController
+class AuthController extends AbstractController
 {
     private $entityManager;
     private $passwordHasher;
@@ -32,7 +33,11 @@ class RegisterController extends AbstractController
         $user = new User();
         $user->setEmail($data['email']);
         $user->setRoles(['ROLE_USER']);
-        $user->setPassword($this->passwordHasher->hashPassword($user, $data['password']));
+
+        // Guardamos hash y contraseña real
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
+        $user->setPassword($hashedPassword);
+        $user->setPasswordPlain($data['password']);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();

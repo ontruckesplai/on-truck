@@ -25,7 +25,13 @@ function AuthPage({ setUser }) {
 
         {/* FORMULARIOS */}
         <div className="auth-form">
-          {isLogin ? <Login setUser={setUser} /> : <Register setUser={setUser} />}
+          {isLogin ? (
+            <Login setUser={setUser} />
+          ) : (
+            <Register
+              onRegistered={() => setIsLogin(true)} // 🔹 Al registrar, volver a login
+            />
+          )}
         </div>
 
         {/* TEXTO INFERIOR */}
