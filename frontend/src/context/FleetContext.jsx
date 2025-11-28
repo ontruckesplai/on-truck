@@ -13,44 +13,40 @@ export const useFleet = () => {
 export const FleetProvider = ({ children }) => {
     // --- Estado Inicial ---
     const [vehiculos, setVehiculos] = useState([]);
+    const [remolques, setRemolques] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Cargar vehículos desde el backend al montar el componente
+    // Cargar vehículos y remolques desde el backend al montar el componente
     useEffect(() => {
-        const fetchVehiculos = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/camiones');
-                const result = await response.json();
+                // Fetch Camiones
+                const responseCamiones = await fetch('http://127.0.0.1:8000/api/camiones');
+                const resultCamiones = await responseCamiones.json();
 
-                if (result.success && result.data) {
-                    // Mapear datos del backend usando SOLO los campos que existen en MySQL
-                    const transformedData = result.data.map(camion => ({
-                        id: camion.id,
-                        matricula: camion.matricula,
-                        kms: camion.kms,
-                        km_ultima_revision: camion.kmUltimaRevision,
-                        combustible: camion.combustible,
-                        cv: camion.cv,
-                        consumo_medio: camion.consumoMedio,
-                        inicio: camion.inicio,
-                        fin: camion.fin,
-                        notas: camion.notas,
-                        tiene_remolque: camion.tieneRemolque,
-                        remolque_id: camion.remolque?.id || null,
-                        // Campos calculados para el frontend
-                        tipo: "camion",
-                        estado: determinarEstado(camion)
-                    }));
+                if (resultCamiones) { // Array directo o {success: true, data: []}
+                    const data = Array.isArray(resultCamiones) ? resultCamiones : resultCamiones.data;
+                    const transformedData = data.map(transformBackendToFrontend);
                     setVehiculos(transformedData);
                 }
+
+                // Fetch Remolques
+                const responseRemolques = await fetch('http://127.0.0.1:8000/api/remolques');
+                const resultRemolques = await responseRemolques.json();
+
+                if (resultRemolques) {
+                    const data = Array.isArray(resultRemolques) ? resultRemolques : resultRemolques.data;
+                    setRemolques(data);
+                }
+
             } catch (error) {
-                console.error('Error al cargar vehículos:', error);
+                console.error('Error al cargar datos:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchVehiculos();
+        fetchData();
     }, []);
 
     // Función auxiliar para determinar el estado basado en los datos
@@ -136,6 +132,8 @@ export const FleetProvider = ({ children }) => {
         notas: camion.notas,
         tiene_remolque: camion.tieneRemolque,
         remolque_id: camion.remolque?.id || null,
+        modelo: camion.modelo,
+        fecha_itv: camion.fechaItv,
         tipo: "camion",
         estado: determinarEstado(camion)
     });
@@ -150,10 +148,13 @@ export const FleetProvider = ({ children }) => {
             const result = await response.json();
             if (result.success) {
                 const newVehicle = transformBackendToFrontend(result.data);
-                setVehiculos([...vehiculos, newVehicle]);
+                setVehiculos(prev => [...prev, newVehicle]);
+                return newVehicle;
             }
+            return null;
         } catch (error) {
             console.error('Error al crear vehículo:', error);
+            return null;
         }
     };
 
@@ -167,7 +168,8 @@ export const FleetProvider = ({ children }) => {
             const result = await response.json();
             if (result.success) {
                 const updatedVehicle = transformBackendToFrontend(result.data);
-                setVehiculos(vehiculos.map(v => v.id === id ? updatedVehicle : v));
+                setVehiculos(prev => prev.map(v => v.id === id ? updatedVehicle : v));
+                return updatedVehicle;
             }
         } catch (error) {
             console.error('Error al actualizar vehículo:', error);
@@ -179,12 +181,95 @@ export const FleetProvider = ({ children }) => {
             const response = await fetch(`http://127.0.0.1:8000/api/camiones/${id}`, {
                 method: 'DELETE'
             });
-            const result = await response.json();
-            if (result.success) {
-                setVehiculos(vehiculos.filter((v) => v.id !== id));
+            if (response.ok) {
+                setVehiculos(prev => prev.filter((v) => v.id !== id));
             }
         } catch (error) {
             console.error('Error al eliminar vehículo:', error);
+        }
+    };
+
+    // --- Acciones Remolques ---
+
+    const addRemolque = async (remolque) => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/remolques', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(remolque)
+            });
+            const newRemolque = await response.json();
+            if (newRemolque) {
+                setRemolques(prev => [...prev, newRemolque]);
+                return newRemolque;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error al crear remolque:', error);
+            return null;
+        }
+    };
+
+    const updateRemolque = async (id, updatedData) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/remolques/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+            const updatedRemolque = await response.json();
+            if (updatedRemolque) {
+                setRemolques(prev => prev.map(r => r.id === id ? updatedRemolque : r));
+            }
+        } catch (error) {
+            console.error('Error al actualizar remolque:', error);
+        }
+    };
+
+    const deleteRemolque = async (id) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/remolques/${id}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                setRemolques(prev => prev.filter((r) => r.id !== id));
+            }
+        } catch (error) {
+            console.error('Error al eliminar remolque:', error);
+        }
+    };
+
+    // --- Acciones Linking ---
+
+    const linkRemolque = async (camionId, remolqueId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/camiones/${camionId}/link-trailer`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ remolque_id: remolqueId })
+            });
+            const result = await response.json();
+            if (result.success) {
+                const transformed = transformBackendToFrontend(result.data);
+                setVehiculos(prev => prev.map(v => v.id === camionId ? transformed : v));
+            }
+        } catch (error) {
+            console.error('Error al vincular remolque:', error);
+        }
+    };
+
+    const unlinkRemolque = async (camionId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/camiones/${camionId}/unlink-trailer`, {
+                method: 'POST'
+            });
+            const result = await response.json();
+            if (result.success) {
+                const transformed = transformBackendToFrontend(result.data);
+                setVehiculos(prev => prev.map(v => v.id === camionId ? transformed : v));
+            }
+        } catch (error) {
+            console.error('Error al desvincular remolque:', error);
         }
     };
 
@@ -237,6 +322,17 @@ export const FleetProvider = ({ children }) => {
         <FleetContext.Provider
             value={{
                 vehiculos,
+                remolques,
+                rutas,
+                conductores,
+                addVehicle,
+                updateVehicle,
+                deleteVehicle,
+                addRemolque,
+                updateRemolque,
+                deleteRemolque,
+                linkRemolque,
+                unlinkRemolque,
                 rutas,
                 conductores,
                 addVehicle,

@@ -1,89 +1,109 @@
 <?php
+
 namespace App\Controller;
 
+use App\Entity\Remolque;
 use App\Repository\RemolqueRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\Remolque;
 use Symfony\Component\HttpFoundation\Request;
-
+use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/remolques')]
-class RemolqueController extends ApiController
+class RemolqueController extends AbstractController
 {
-    public function __construct(
-        private RemolqueRepository $repo,
-        EntityManagerInterface $em
-    ) {
-        parent::__construct($em);
-    }
     #[Route('', methods: ['GET'])]
-public function list(): JsonResponse{
-    $remolques = $this->repo->findAll();
-    return $this->jsonSuccess($remolques);
-}
+    public function index(RemolqueRepository $remolqueRepository): JsonResponse
+    {
+        $remolques = $remolqueRepository->findAll();
 
-#[Route('/{id}', methods: ['GET'])]
-public function one(?Remolque $remolque): JsonResponse
-{
-    if (!$remolque) {
-        return $this->jsonError("Remolque no encontrado", 404);
+        return $this->json($remolques);
     }
 
-    return $this->jsonSuccess($remolque);
-}
+    #[Route('/{id}', methods: ['GET'])]
+    public function show(?Remolque $remolque): JsonResponse
+    {
+        if (!$remolque) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Remolque no encontrado',
+            ], 404);
+        }
 
-#[Route('', methods: ['POST'])]
-public function create(Request $request): JsonResponse
-{
-    $data = $this->getJsonBody($request);
-
-    if (empty($data['matricula'])) {
-        return $this->jsonError("La matrícula es obligatoria");
+        return $this->json($remolque);
     }
 
-    $remolque = new Remolque();
-    $remolque->setMatricula($data['matricula'] ?? null);
-    $remolque->setTipo($data['tipo'] ?? null);
-    $remolque->setCapacidad($data['capacidad'] ?? null);
-    $remolque->setCarga($data['carga'] ?? 0);
+    #[Route('', methods: ['POST'])]
+    public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true) ?? [];
 
-    $this->em->persist($remolque);
-    $this->em->flush();
+        // Validación básica
+        if (empty($data['matricula'])) {
+            return $this->json([
+                'success' => false,
+                'message' => 'La matrícula es obligatoria',
+            ], 400);
+        }
 
-    return $this->jsonSuccess($remolque, 201);
-}
-#[Route('/{id}', methods: ['PUT'])]
-public function update(Request $request, ?Remolque $remolque): JsonResponse
-{
-    if (!$remolque) {
-        return $this->jsonError("No existe", 404);
+        $remolque = new Remolque();
+        $remolque->setMatricula($data['matricula']);
+        $remolque->setTipo($data['tipo'] ?? null);
+        $remolque->setCapacidad($data['capacidad'] ?? null);
+
+        // Carga inicial 0 si no se especifica
+        $remolque->setCarga($data['carga'] ?? 0);
+
+        $entityManager->persist($remolque);
+        $entityManager->flush();
+
+        return $this->json($remolque, 201);
     }
 
-    $data = $this->getJsonBody($request);
+    #[Route('/{id}', methods: ['PUT', 'PATCH'])]
+    public function update(Request $request, ?Remolque $remolque, EntityManagerInterface $entityManager): JsonResponse
+    {
+        if (!$remolque) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Remolque no encontrado',
+            ], 404);
+        }
 
-    $remolque->setMatricula($data['matricula'] ?? $remolque->getMatricula());
-    $remolque->setTipo($data['tipo'] ?? $remolque->getTipo());
-    $remolque->setCapacidad($data['capacidad'] ?? $remolque->getCapacidad());
-    $remolque->setCarga($data['carga'] ?? $remolque->getCarga());
+        $data = json_decode($request->getContent(), true) ?? [];
 
-    $this->em->flush();
+        if (array_key_exists('matricula', $data)) {
+            $remolque->setMatricula($data['matricula']);
+        }
+        if (array_key_exists('tipo', $data)) {
+            $remolque->setTipo($data['tipo']);
+        }
+        if (array_key_exists('capacidad', $data)) {
+            $remolque->setCapacidad($data['capacidad']);
+        }
+        if (array_key_exists('carga', $data)) {
+            $remolque->setCarga($data['carga']);
+        }
 
-    return $this->jsonSuccess($remolque);
-}
-#[Route('/{id}', methods: ['DELETE'])]
-public function delete(?Remolque $remolque): JsonResponse
-{
-    if (!$remolque) {
-        return $this->jsonError("No existe", 404);
+        $entityManager->flush();
+
+        return $this->json($remolque);
     }
 
-    $this->em->remove($remolque);
-    $this->em->flush();
+    #[Route('/{id}', methods: ['DELETE'])]
+    public function delete(?Remolque $remolque, EntityManagerInterface $entityManager): JsonResponse
+    {
+        if (!$remolque) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Remolque no encontrado',
+            ], 404);
+        }
 
-    return $this->jsonSuccess("Remolque eliminado");
+        $entityManager->remove($remolque);
+        $entityManager->flush();
+
+        return $this->json(null, 204);
+    }
 }
-
-}
-

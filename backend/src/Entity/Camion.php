@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CamionRepository::class)]
 #[ORM\Table(name: "camiones")]
-class Camion
+class Camion implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -47,6 +47,12 @@ class Camion
     #[ORM\OneToOne(targetEntity: Remolque::class)]
     #[ORM\JoinColumn(name: "remolque_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?Remolque $remolque = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $modelo = null;
+
+    #[ORM\Column(type: "date", nullable: true)]
+    private ?\DateTimeInterface $fecha_itv = null;
 
     // --------------------
     // Getters / Setters
@@ -176,5 +182,47 @@ class Camion
     {
         $this->remolque = $remolque;
         return $this;
+    }
+
+    public function getModelo(): ?string
+    {
+        return $this->modelo;
+    }
+
+    public function setModelo(?string $modelo): self
+    {
+        $this->modelo = $modelo;
+        return $this;
+    }
+
+    public function getFechaItv(): ?\DateTimeInterface
+    {
+        return $this->fecha_itv;
+    }
+
+    public function setFechaItv(?\DateTimeInterface $fecha_itv): self
+    {
+        $this->fecha_itv = $fecha_itv;
+        return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'matricula' => $this->matricula,
+            'kms' => $this->kms,
+            'kmUltimaRevision' => $this->km_ultima_revision,
+            'combustible' => $this->combustible,
+            'cv' => $this->cv,
+            'consumoMedio' => $this->consumo_medio,
+            'inicio' => $this->inicio,
+            'fin' => $this->fin,
+            'notas' => $this->notas,
+            'tieneRemolque' => $this->tiene_remolque,
+            'remolque' => $this->remolque,
+            'modelo' => $this->modelo,
+            'fechaItv' => $this->fecha_itv?->format('Y-m-d'),
+        ];
     }
 }

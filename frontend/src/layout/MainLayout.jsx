@@ -1,11 +1,17 @@
 import { Outlet, useLocation } from "react-router-dom";
+import { useState } from "react";
 import Sidebar from "./Sidebar";
 import { useFleet } from "../context/FleetContext";
 import "./MainLayout.css";
 
+
+
+import ThemeToggle from "../components/ThemeToggle";
+
 function MainLayout() {
     const { darkMode, toggleTheme } = useFleet();
     const location = useLocation(); // Obtener la ubicación actual
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     // Diccionario de títulos
     const titles = {
@@ -26,11 +32,19 @@ function MainLayout() {
                 <header className="top-header">
                     <h1 className="page-title">{currentTitle}</h1>
                     <div className="header-actions">
-                        <button onClick={toggleTheme} className="theme-toggle">
-                            {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-                        </button>
-                        <div className="user-profile">
+                        <ThemeToggle />
+                        <div
+                            className="user-profile"
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        >
                             <span>Admin</span>
+                            {isDropdownOpen && (
+                                <div className="user-dropdown">
+                                    <button onClick={() => console.log("Login clicked")}>
+                                        Log in
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </header>

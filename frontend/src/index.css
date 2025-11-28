@@ -3,6 +3,7 @@
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
+  --card-bg: var(--bg-secondary);
 
   --text-primary: #1e293b;
   --text-secondary: #64748b;
@@ -31,12 +32,13 @@
 
 .dark-mode {
   /* Dark Mode Palette */
-  --bg-primary: #0f172a;
-  /* Slate 900 */
-  --bg-secondary: #1e293b;
-  /* Slate 800 */
+  --bg-primary: #1e293b;
+  /* Slate 800 (Lighter Page) */
+  --bg-secondary: #0f172a;
+  /* Slate 900 (Darker Cards) */
   --bg-tertiary: #334155;
   /* Slate 700 */
+  --card-bg: var(--bg-secondary);
 
   --text-primary: #f8fafc;
   /* Slate 50 */

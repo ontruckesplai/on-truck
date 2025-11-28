@@ -1,0 +1,97 @@
+.theme-toggle-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.theme-toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.theme-toggle-label {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    transition: .4s;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-label:hover {
+    border-color: var(--accent-primary);
+}
+
+.theme-toggle-slider {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 3px;
+    background-color: var(--bg-secondary);
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle-input:checked+.theme-toggle-label .theme-toggle-slider {
+    transform: translateX(28px);
+    background-color: #ffffff;
+    /* Always white knob in dark mode for contrast */
+}
+
+.theme-toggle-input:checked+.theme-toggle-label {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.toggle-icon {
+    width: 14px;
+    height: 14px;
+    z-index: 1;
+    transition: color 0.3s ease;
+}
+
+/* Sun Icon (Left) */
+.toggle-icon.sun {
+    color: #ffffff;
+    /* White sun when active (Dark Mode background is blue) */
+}
+
+/* Moon Icon (Right) */
+.toggle-icon.moon {
+    color: #1e293b;
+    /* Dark Slate moon when inactive (Light Mode background is light) */
+}
+
+/* When Checked (Dark Mode) */
+/* The Sun is exposed on the left. Background is Blue. Sun is White. Good. */
+/* The Moon is covered by the slider. */
+
+/* When Unchecked (Light Mode) */
+/* The Sun is covered by the slider. */
+/* The Moon is exposed on the right. Background is Light. Moon is Dark. Good. */
+
+.theme-toggle-input:checked+.theme-toggle-label .sun {
+    opacity: 1;
+}
+
+.theme-toggle-input:not(:checked)+.theme-toggle-label .moon {
+    opacity: 1;
+}
