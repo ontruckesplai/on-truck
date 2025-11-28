@@ -4,6 +4,8 @@ import Sidebar from "./Sidebar";
 import { useFleet } from "../context/FleetContext";
 import "./MainLayout.css";
 
+
+
 function MainLayout() {
     const { darkMode, toggleTheme } = useFleet();
     const location = useLocation(); // Obtener la ubicación actual
