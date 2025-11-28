@@ -1,9 +1,12 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\Camion;
+use App\Entity\Remolque;
 use App\Repository\CamionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/camiones')]
@@ -52,30 +55,78 @@ class CamionController extends ApiController
     }
 
     #[Route('/{id}', methods: ['PUT'])]
-    public function update(int $id, \Symfony\Component\HttpFoundation\Request $request): JsonResponse
+    public function update(Request $request, Camion $camion, EntityManagerInterface $entityManager): JsonResponse
     {
-        $camion = $this->repo->find($id);
-        if (!$camion) {
-            return $this->jsonError('Camión no encontrado', 404);
-        }
-
         $data = json_decode($request->getContent(), true);
 
-        if (isset($data['matricula'])) $camion->setMatricula($data['matricula']);
-        if (isset($data['kms'])) $camion->setKms($data['kms']);
-        if (isset($data['km_ultima_revision'])) $camion->setKmUltimaRevision($data['km_ultima_revision']);
-        if (isset($data['combustible'])) $camion->setCombustible($data['combustible']);
-        if (isset($data['cv'])) $camion->setCv($data['cv']);
-        if (isset($data['consumo_medio'])) $camion->setConsumoMedio($data['consumo_medio']);
-        if (isset($data['inicio'])) $camion->setInicio($data['inicio']);
-        if (isset($data['fin'])) $camion->setFin($data['fin']);
-        if (isset($data['notas'])) $camion->setNotas($data['notas']);
-        if (isset($data['modelo'])) $camion->setModelo($data['modelo']);
+        if (isset($data['matricula'])) {
+            $camion->setMatricula($data['matricula']);
+        }
+        if (isset($data['kms'])) {
+            $camion->setKms($data['kms']);
+        }
+        if (isset($data['kmUltimaRevision'])) {
+            $camion->setKmUltimaRevision($data['kmUltimaRevision']);
+        }
+        if (isset($data['combustible'])) {
+            $camion->setCombustible($data['combustible']);
+        }
+        if (isset($data['cv'])) {
+            $camion->setCv($data['cv']);
+        }
+        if (isset($data['consumoMedio'])) {
+            $camion->setConsumoMedio($data['consumoMedio']);
+        }
+        if (isset($data['inicio'])) {
+            $camion->setInicio($data['inicio']);
+        }
+        if (isset($data['fin'])) {
+            $camion->setFin($data['fin']);
+        }
+        if (isset($data['notas'])) {
+            $camion->setNotas($data['notas']);
+        }
+        if (isset($data['modelo'])) {
+            $camion->setModelo($data['modelo']);
+        }
         if (isset($data['fecha_itv'])) {
             $camion->setFechaItv(new \DateTime($data['fecha_itv']));
         }
 
-        $this->em->flush();
+        $entityManager->flush();
+
+        return $this->jsonSuccess($camion);
+    }
+
+    #[Route('/{id}/link-trailer', methods: ['POST'])]
+    public function linkTrailer(Request $request, Camion $camion, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $remolqueId = $data['remolque_id'] ?? null;
+
+        if (!$remolqueId) {
+            return $this->json(['error' => 'Remolque ID is required'], 400);
+        }
+
+        $remolque = $entityManager->getRepository(Remolque::class)->find($remolqueId);
+
+        if (!$remolque) {
+            return $this->json(['error' => 'Remolque not found'], 404);
+        }
+
+        $camion->setRemolque($remolque);
+        $camion->setTieneRemolque(true);
+        $entityManager->flush();
+
+        return $this->jsonSuccess($camion);
+    }
+
+    #[Route('/{id}/unlink-trailer', methods: ['POST'])]
+    public function unlinkTrailer(Camion $camion, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $camion->setRemolque(null);
+        $camion->setTieneRemolque(false);
+        $entityManager->flush();
 
         return $this->jsonSuccess($camion);
     }

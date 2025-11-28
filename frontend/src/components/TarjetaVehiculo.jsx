@@ -1,16 +1,7 @@
 import { useFleet } from "../context/FleetContext";
 import "./TarjetaVehiculo.css";
 
-// // --- Iconos ---
-// const IconoFurgoneta = () => (
-//   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.34a1 1 0 0 0-.2-.62l-1.4-1.4A1 1 0 0 0 19.34 11H13V6" /><circle cx="6.5" cy="18.5" r="2.5" /><circle cx="16.5" cy="18.5" r="2.5" /></svg>
-// );
-// // const IconoCamion = () => (
-// //   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 9V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3" /><path d="M3 15h18" /><path d="M12 9v12" /><circle cx="7.5" cy="18.5" r="2.5" /><circle cx="16.5" cy="18.5" r="2.5" /></svg>
-// // );
-// const IconoRemolque = () => (
-//   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12H12" /><path d="M2 12H12" /><path d="M17 17H7" /><path d="M12 12v5" /><path d="M12 12V7" /><circle cx="5" cy="17" r="2" /><circle cx="19" cy="17" r="2" /></svg>
-// );
+
 
 const IconoFurgoneta = () => (
   <svg
@@ -89,6 +80,7 @@ const tiposVehiculo = {
 };
 
 function TarjetaVehiculo({ vehiculo, onEdit }) {
+  const { vehiculos, remolques } = useFleet();
   // --- Lógica de Negocio ---
   const kms = vehiculo.kms || 0;
   const kmUltimaRevision = vehiculo.km_ultima_revision;
@@ -137,10 +129,28 @@ function TarjetaVehiculo({ vehiculo, onEdit }) {
     claseBorde = "borde-naranja";
   }
 
-  // --- Lógica de Estado ---
-  // Por ahora siempre "Disponible" si no hay lógica de taller/ruta
   const estado = "Disponible";
   const claseEstado = "estado-disponible";
+
+  // --- Lógica de Vinculación (Solo visualización) ---
+  const isCamion = vehiculo.tipo === 'camion';
+  const isRemolque = vehiculo.tipo === 'remolque';
+
+  // Datos para el renderizado
+  let linkedEntity = null;
+
+  if (isCamion) {
+    if (vehiculo.remolque_id) {
+      // Buscar el objeto remolque completo si no está en vehiculo.remolque
+      linkedEntity = remolques.find(r => r.id === vehiculo.remolque_id) || vehiculo.remolque;
+    }
+  } else if (isRemolque) {
+    // Buscar si algún camión tiene este remolque asignado
+    const camionVinculado = vehiculos.find(v => v.remolque_id === vehiculo.id);
+    if (camionVinculado) {
+      linkedEntity = camionVinculado;
+    }
+  }
 
   return (
     <div
@@ -194,6 +204,25 @@ function TarjetaVehiculo({ vehiculo, onEdit }) {
       {vehiculo.notas && (
         <div className="notas-preview">
           <span className="notas-label">Notas:</span> {vehiculo.notas}
+        </div>
+      )}
+
+      {/* Sección de Vinculación (Solo visualización) */}
+      {linkedEntity && (
+        <div className="vinculacion-section">
+          <div className="vinculado-info">
+            <span className="vinculado-icon">
+              {isCamion ? <IconoRemolque /> : <IconoCamion />}
+            </span>
+            <div className="vinculado-detalles">
+              <span className="vinculado-label">
+                {isCamion ? "Remolque vinculado" : "Camión vinculado"}
+              </span>
+              <span className="vinculado-valor">
+                {linkedEntity.matricula}
+              </span>
+            </div>
+          </div>
         </div>
       )}
     </div>

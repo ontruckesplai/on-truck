@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RemolqueRepository::class)]
 #[ORM\Table(name: "remolques")]
-class Remolque
+class Remolque implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -32,7 +32,7 @@ class Remolque
 
     public function getId(): ?int
     {
-        return $id ?? null;
+        return $this->id ?? null;
     }
 
     public function getMatricula(): ?string
@@ -77,5 +77,16 @@ class Remolque
     {
         $this->carga = $carga;
         return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'matricula' => $this->matricula,
+            'tipo' => $this->tipo,
+            'capacidad' => $this->capacidad,
+            'carga' => $this->carga,
+        ];
     }
 }
