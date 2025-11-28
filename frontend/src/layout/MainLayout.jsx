@@ -6,6 +6,8 @@ import "./MainLayout.css";
 
 
 
+import ThemeToggle from "../components/ThemeToggle";
+
 function MainLayout() {
     const { darkMode, toggleTheme } = useFleet();
     const location = useLocation(); // Obtener la ubicación actual
@@ -30,9 +32,7 @@ function MainLayout() {
                 <header className="top-header">
                     <h1 className="page-title">{currentTitle}</h1>
                     <div className="header-actions">
-                        <button onClick={toggleTheme} className="theme-toggle">
-                            {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-                        </button>
+                        <ThemeToggle />
                         <div
                             className="user-profile"
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
