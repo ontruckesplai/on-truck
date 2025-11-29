@@ -19,7 +19,8 @@ function MainLayout() {
         "/vehiculos": "Vehículos",
         "/rutas": "Rutas",
         "/conductores": "Conductores",
-        "/configuracion": "Configuración"
+        "/configuracion": "Configuración",
+        "/contratos": "Contratos",
     };
 
     // Si la ruta existe en el objeto, usa ese valor, si no, usa el defecto

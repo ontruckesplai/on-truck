@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useFleet } from "../context/FleetContext";
+import ConfirmModal from "./ConfirmModal";
 import "./VehicleForm.css";
 
 function VehicleForm({ onClose, initialData = null }) {
@@ -48,12 +49,14 @@ function VehicleForm({ onClose, initialData = null }) {
     }
   }, [initialData, vehiculos]);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // ... (existing useEffect and other handlers)
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
-
 
   // Filtrar opciones disponibles para vincular
   const availableRemolques = remolques.filter(r =>
@@ -131,14 +134,17 @@ function VehicleForm({ onClose, initialData = null }) {
   };
 
   const handleDelete = () => {
-    if (window.confirm(`¿Estás seguro de eliminar el vehículo ${initialData.matricula}?`)) {
-      if (formData.tipo === 'remolque') {
-        deleteRemolque(initialData.id);
-      } else {
-        deleteVehicle(initialData.id);
-      }
-      onClose();
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (formData.tipo === 'remolque') {
+      await deleteRemolque(initialData.id);
+    } else {
+      await deleteVehicle(initialData.id);
     }
+    setShowDeleteModal(false);
+    onClose();
   };
 
   return (
@@ -149,9 +155,8 @@ function VehicleForm({ onClose, initialData = null }) {
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
-
-
         <form onSubmit={handleSubmit} className="vehicle-form">
+          {/* ... existing form fields ... */}
 
           <div className="form-group">
             <label>Tipo de Vehículo</label>
@@ -159,7 +164,7 @@ function VehicleForm({ onClose, initialData = null }) {
               name="tipo"
               value={formData.tipo}
               onChange={handleInputChange}
-              disabled={!!initialData} // No cambiar tipo al editar
+              disabled={!!initialData}
             >
               <option value="camion">Camión</option>
               <option value="remolque">Remolque</option>
@@ -168,7 +173,6 @@ function VehicleForm({ onClose, initialData = null }) {
           </div>
 
           {formData.tipo === 'remolque' ? (
-            /* --- CAMPOS PARA REMOLQUE --- */
             <>
               <div className="form-group">
                 <label>Matrícula *</label>
@@ -221,7 +225,6 @@ function VehicleForm({ onClose, initialData = null }) {
               </div>
             </>
           ) : (
-            /* --- CAMPOS PARA CAMIÓN (Existentes) --- */
             <>
               <div className="form-row">
                 <div className="form-group">
@@ -346,6 +349,17 @@ function VehicleForm({ onClose, initialData = null }) {
             </button>
           </div>
         </form>
+
+        <ConfirmModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={confirmDelete}
+          title="¿Eliminar Vehículo?"
+          message={`Estás a punto de eliminar el vehículo con matrícula "${formData.matricula}". Esta acción no se puede deshacer.`}
+          confirmText="Sí, eliminar"
+          cancelText="Cancelar"
+          isDanger={true}
+        />
       </div>
     </div>
   );

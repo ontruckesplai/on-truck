@@ -6,6 +6,7 @@ import VehiculosPage from "./pages/VehiculosPage";
 import RutasPage from "./pages/RutasPage";
 import ConductoresPage from "./pages/ConductoresPage";
 import ConfiguracionPage from "./pages/ConfiguracionPage";
+import ContractsPage from "./pages/ContractsPage";
 import "./App.css";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="vehiculos" element={<VehiculosPage />} />
+          <Route path="contratos" element={<ContractsPage />} />
           <Route path="rutas" element={<RutasPage />} />
           <Route path="conductores" element={<ConductoresPage />} />
           <Route path="configuracion" element={<ConfiguracionPage />} />

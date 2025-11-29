@@ -64,10 +64,10 @@ class ContractController extends AbstractController
             $contract->setOriginAddress($data['origin_address'] ?? '');
             
             // Handle nullable coordinates - Ensure empty strings become NULL
-            $originLat = !empty($data['origin_lat']) ? $data['origin_lat'] : null;
-            $originLon = !empty($data['origin_lon']) ? $data['origin_lon'] : null;
-            $destLat = !empty($data['destination_lat']) ? $data['destination_lat'] : null;
-            $destLon = !empty($data['destination_lon']) ? $data['destination_lon'] : null;
+            $originLat = (isset($data['origin_lat']) && $data['origin_lat'] !== '') ? $data['origin_lat'] : null;
+            $originLon = (isset($data['origin_lon']) && $data['origin_lon'] !== '') ? $data['origin_lon'] : null;
+            $destLat = (isset($data['destination_lat']) && $data['destination_lat'] !== '') ? $data['destination_lat'] : null;
+            $destLon = (isset($data['destination_lon']) && $data['destination_lon'] !== '') ? $data['destination_lon'] : null;
 
             $contract->setOriginLat($originLat);
             $contract->setOriginLon($originLon);
@@ -123,19 +123,23 @@ class ContractController extends AbstractController
         
         // Handle coordinates update - allow setting to null
         if (array_key_exists('origin_lat', $data)) {
-            $contract->setOriginLat(!empty($data['origin_lat']) ? $data['origin_lat'] : null);
+            $val = $data['origin_lat'];
+            $contract->setOriginLat(($val !== null && $val !== '') ? $val : null);
         }
         if (array_key_exists('origin_lon', $data)) {
-            $contract->setOriginLon(!empty($data['origin_lon']) ? $data['origin_lon'] : null);
+            $val = $data['origin_lon'];
+            $contract->setOriginLon(($val !== null && $val !== '') ? $val : null);
         }
         
         if (isset($data['destination_address'])) $contract->setDestinationAddress($data['destination_address']);
         
         if (array_key_exists('destination_lat', $data)) {
-            $contract->setDestinationLat(!empty($data['destination_lat']) ? $data['destination_lat'] : null);
+            $val = $data['destination_lat'];
+            $contract->setDestinationLat(($val !== null && $val !== '') ? $val : null);
         }
         if (array_key_exists('destination_lon', $data)) {
-            $contract->setDestinationLon(!empty($data['destination_lon']) ? $data['destination_lon'] : null);
+            $val = $data['destination_lon'];
+            $contract->setDestinationLon(($val !== null && $val !== '') ? $val : null);
         }
 
         if (isset($data['status'])) $contract->setStatus($data['status']);
