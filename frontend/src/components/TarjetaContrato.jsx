@@ -66,7 +66,9 @@ function TarjetaContrato({ contract, onClick }) {
                         <div className="point-dot origin"></div>
                         <div className="point-info">
                             <span className="point-label">Origen</span>
-                            <span className="point-value" title={contract.origin_address}>{contract.origin_address}</span>
+                            <span className="point-value" title={contract.origin_address}>
+                                {contract.origin_address ? contract.origin_address.split(',')[0] : "-"}
+                            </span>
                         </div>
                     </div>
                     <div className="ruta-line"></div>
@@ -74,7 +76,9 @@ function TarjetaContrato({ contract, onClick }) {
                         <div className="point-dot destination"></div>
                         <div className="point-info">
                             <span className="point-label">Destino</span>
-                            <span className="point-value" title={contract.destination_address}>{contract.destination_address}</span>
+                            <span className="point-value" title={contract.destination_address}>
+                                {contract.destination_address ? contract.destination_address.split(',')[0] : "-"}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -85,31 +89,111 @@ function TarjetaContrato({ contract, onClick }) {
                         <span className="dato-valor">{contract.distance_km ? `${Math.round(contract.distance_km)} km` : "-"}</span>
                     </div>
                     <div className="dato-item">
-                        <span className="dato-label">Carga</span>
-                        <span className="dato-valor">{contract.total_quantity?.toLocaleString('es-ES')} kg</span>
-                    </div>
-                    <div className="dato-item">
                         <span className="dato-label">Producto</span>
                         <span className="dato-valor">{contract.product_type}</span>
                     </div>
-                    <div className="dato-item">
-                        <span className="dato-label">Fecha</span>
-                        <span className="dato-valor">{contract.deadline}</span>
+                </div>
+
+                {/* Progress Bars Section */}
+                <div className="progress-section">
+                    {/* Time Progress */}
+                    <div className="progress-group">
+                        <div className="progress-header">
+                            <span className="progress-label">Tiempo Restante</span>
+                            <span className="progress-value">
+                                {(() => {
+                                    if (!contract.deadline) return "-";
+                                    const deadlineDate = new Date(contract.deadline);
+                                    deadlineDate.setHours(0, 0, 0, 0);
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0);
+                                    const diffTime = deadlineDate.getTime() - today.getTime();
+                                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+                                    if (diffDays < 0) return <span style={{ color: '#ef4444' }}>Vencido ({Math.abs(diffDays)} días)</span>;
+                                    if (diffDays === 0) return <span style={{ color: '#f97316' }}>Hoy</span>;
+                                    return `${diffDays} días`;
+                                })()}
+                            </span>
+                        </div>
+                        <div className="aesthetic-bar-container">
+                            <div
+                                className={`aesthetic-bar-fill time ${(() => {
+                                    if (!contract.deadline) return '';
+                                    const deadlineDate = new Date(contract.deadline);
+                                    const today = new Date();
+                                    const diffTime = deadlineDate.getTime() - today.getTime();
+                                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                                    if (diffDays < 0) return 'danger';
+                                    if (diffDays <= 2) return 'warning';
+                                    return '';
+                                })()}`}
+                                style={{
+                                    width: (() => {
+                                        // If no deadline, no progress bar
+                                        if (!contract.deadline) return '0%';
+
+                                        // If no creation date (old contracts), assume 0% progress or handle differently
+                                        // Here we default to 0% to avoid confusion
+                                        if (!contract.created_at) return '0%';
+
+                                        const start = new Date(contract.created_at).getTime();
+                                        const end = new Date(contract.deadline).getTime();
+                                        const now = new Date().getTime();
+
+                                        // Safety check for invalid dates
+                                        if (isNaN(start) || isNaN(end)) return '0%';
+
+                                        if (now >= end) return '100%';
+                                        if (now <= start) return '0%';
+
+                                        const total = end - start;
+                                        const current = now - start;
+
+                                        // Prevent division by zero
+                                        if (total <= 0) return '100%';
+
+                                        return `${Math.min(100, Math.max(0, (current / total) * 100))}%`;
+                                    })(),
+                                }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    {/* Cargo Progress */}
+                    <div className="progress-group">
+                        <div className="progress-header">
+                            <span className="progress-label">Progreso Carga</span>
+                            <span className="progress-value">
+                                {contract.delivered_quantity ? Math.round((contract.delivered_quantity / contract.total_quantity) * 100) : 0}%
+                            </span>
+                        </div>
+                        <div className="aesthetic-bar-container">
+                            <div
+                                className="aesthetic-bar-fill cargo"
+                                style={{
+                                    width: `${Math.min(100, ((contract.delivered_quantity || 0) / contract.total_quantity) * 100)}%`
+                                }}
+                            ></div>
+                        </div>
+                        <div style={{ fontSize: '0.75rem', textAlign: 'right', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                            {contract.delivered_quantity?.toLocaleString('es-ES') || 0} / {contract.total_quantity?.toLocaleString('es-ES')} kg
+                        </div>
                     </div>
                 </div>
 
-                <div className="ruta-footer mt-4 pt-3 border-t border-dashed border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                    <div className="ruta-truck flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <span className="truck-icon">🚛</span>
-                        <span>Sin asignar</span>
-                    </div>
-                    <button className="btn-map text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1" onClick={handleMapClick}>
-                        Ver Mapa 🗺️
+                <div className="tarjeta-actions">
+                    <button className="btn-action secondary" onClick={(e) => e.stopPropagation()}>
+                        <span>🚛</span> Asignar Camión
+                    </button>
+                    <button className="btn-action primary" onClick={handleMapClick}>
+                        <span>🗺️</span> Ver Mapa
                     </button>
                 </div>
-            </div>
+            </div >
 
-            {showMap && <MapaRuta ruta={mapData} onClose={() => setShowMap(false)} />}
+            {showMap && <MapaRuta ruta={mapData} onClose={() => setShowMap(false)} />
+            }
         </>
     );
 }

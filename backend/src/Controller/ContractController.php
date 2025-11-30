@@ -34,6 +34,8 @@ class ContractController extends AbstractController
                 'destination_lon' => $c->getDestinationLon(),
                 'status' => $c->getStatus(),
                 'distance_km' => $c->getDistanceKm(),
+                'delivered_quantity' => $c->getDeliveredQuantity(),
+                'created_at' => $c->getCreatedAt() ? $c->getCreatedAt()->format('Y-m-d\TH:i:s') : null,
             ];
         }
 
@@ -53,6 +55,7 @@ class ContractController extends AbstractController
             $contract = new Contract();
             $contract->setClientName($data['client_name'] ?? 'Cliente Sin Nombre');
             $contract->setTotalQuantity((int)($data['total_quantity'] ?? 0));
+            $contract->setDeliveredQuantity((int)($data['delivered_quantity'] ?? 0));
             $contract->setProductType($data['product_type'] ?? 'General');
             
             if (!empty($data['deadline'])) {
@@ -116,6 +119,7 @@ class ContractController extends AbstractController
 
         if (isset($data['client_name'])) $contract->setClientName($data['client_name']);
         if (isset($data['total_quantity'])) $contract->setTotalQuantity((int)$data['total_quantity']);
+        if (isset($data['delivered_quantity'])) $contract->setDeliveredQuantity((int)$data['delivered_quantity']);
         if (isset($data['product_type'])) $contract->setProductType($data['product_type']);
         if (isset($data['deadline'])) $contract->setDeadline(new \DateTime($data['deadline']));
         
