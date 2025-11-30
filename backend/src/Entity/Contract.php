@@ -50,6 +50,17 @@ class Contract
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $distanceKm = null;
 
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private ?int $deliveredQuantity = 0;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $createdAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -63,6 +74,30 @@ class Contract
     public function setDistanceKm(?float $distanceKm): static
     {
         $this->distanceKm = $distanceKm;
+
+        return $this;
+    }
+
+    public function getDeliveredQuantity(): ?int
+    {
+        return $this->deliveredQuantity;
+    }
+
+    public function setDeliveredQuantity(int $deliveredQuantity): static
+    {
+        $this->deliveredQuantity = $deliveredQuantity;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

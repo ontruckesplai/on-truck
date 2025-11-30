@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ConfirmModal from "./ConfirmModal";
+import { RouteMap } from "./MapaRuta";
 import "./ContractForm.css"; // Reusing VehicleForm styles for the drawer
 
 function ContractForm({ onClose, initialData = null }) {
@@ -35,28 +36,59 @@ function ContractForm({ onClose, initialData = null }) {
 
         if (name === "origin_address") {
             setActiveField("origin");
-            fetchSuggestions(value);
+            // fetchSuggestions handled by useEffect
         } else if (name === "destination_address") {
             setActiveField("destination");
-            fetchSuggestions(value);
+            // fetchSuggestions handled by useEffect
         }
     };
 
+    // Debounce logic for geocoding
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            if (activeField === 'origin' && formData.origin_address.length >= 3) {
+                fetchSuggestions(formData.origin_address);
+            } else if (activeField === 'destination' && formData.destination_address.length >= 3) {
+                fetchSuggestions(formData.destination_address);
+            } else {
+                setSuggestions([]);
+            }
+        }, 100); // Wait 300ms after typing stops
+
+        return () => clearTimeout(timerId);
+    }, [formData.origin_address, formData.destination_address, activeField]);
+
+    const formatAddress = (address) => {
+        const city = address.city || address.town || address.village || address.hamlet || address.municipality;
+        const province = address.state || address.county || address.province;
+        const postcode = address.postcode;
+        const country = address.country;
+
+        const parts = [city, province, postcode, country].filter(Boolean);
+        return parts.join(", ");
+    };
+
     const fetchSuggestions = async (query) => {
-        if (query.length < 3) {
-            setSuggestions([]);
-            return;
-        }
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`);
+            // Add addressdetails=1 and limit=5 for better results
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`);
+            if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
-            setSuggestions(data);
+
+            const formattedData = data.map(item => ({
+                ...item,
+                display_name: formatAddress(item.address) || item.display_name // Fallback to original if formatting fails
+            }));
+
+            setSuggestions(formattedData);
         } catch (error) {
             console.error("Error fetching suggestions:", error);
+            setSuggestions([]);
         }
     };
 
     const handleSelectSuggestion = (suggestion) => {
+        console.log("Selected suggestion:", suggestion);
         if (activeField === "origin") {
             setFormData(prev => ({
                 ...prev,
@@ -73,10 +105,12 @@ function ContractForm({ onClose, initialData = null }) {
             }));
         }
         setSuggestions([]);
+        setActiveField(null); // Prevent debounce from firing again
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("Submitting contract data:", formData);
         const url = initialData
             ? `http://localhost:8000/api/contracts/${initialData.id}`
             : "http://localhost:8000/api/contracts";
@@ -226,6 +260,16 @@ function ContractForm({ onClose, initialData = null }) {
                             <option value="completed">Completado</option>
                         </select>
                     </div>
+
+                    {/* Embedded Map */}
+                    {formData.origin_lat && formData.origin_lon && formData.destination_lat && formData.destination_lon && (
+                        <div className="form-group" style={{ height: '300px', marginTop: '1rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                            <RouteMap
+                                origin={[formData.origin_lat, formData.origin_lon]}
+                                destination={[formData.destination_lat, formData.destination_lon]}
+                            />
+                        </div>
+                    )}
 
                     <div className="form-actions">
                         {initialData && (

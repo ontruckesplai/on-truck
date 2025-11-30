@@ -68,6 +68,10 @@
     gap: 0.5rem;
 }
 
+.form-group.relative {
+    position: relative;
+}
+
 .form-row {
     display: flex;
     gap: 1rem;
