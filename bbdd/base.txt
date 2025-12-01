@@ -1,9 +1,19 @@
+-- 1️⃣ Crear la base de datos
 CREATE DATABASE IF NOT EXISTS gestion_camiones
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
 USE gestion_camiones;
 
+-- Tabla para controlar versiones de migraciones
+CREATE TABLE doctrine_migration_versions (
+    version VARCHAR(255) NOT NULL,
+    executed_at DATETIME NOT NULL,
+    execution_time INT NOT NULL,
+    PRIMARY KEY(version)
+);
+
+-- 2️⃣ Tabla de remolques
 CREATE TABLE remolques (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     matricula VARCHAR(20) NOT NULL UNIQUE,
@@ -12,6 +22,7 @@ CREATE TABLE remolques (
     carga INT
 );
 
+-- 3️⃣ Tabla de camiones
 CREATE TABLE camiones (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     matricula VARCHAR(20) NOT NULL UNIQUE,
@@ -31,6 +42,7 @@ CREATE TABLE camiones (
         ON UPDATE CASCADE
 );
 
+-- 4️⃣ Tabla de rutas
 CREATE TABLE rutas (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     distancia INT NOT NULL,
@@ -47,4 +59,12 @@ CREATE TABLE rutas (
         FOREIGN KEY (camion_id) REFERENCES camiones(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
+);
+
+-- 5️⃣ Tabla de usuarios para login/registro
+CREATE TABLE users (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(180) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    roles JSON NOT NULL
 );

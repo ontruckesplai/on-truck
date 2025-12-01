@@ -1,4 +1,15 @@
-/* App.css is now minimal as styles are distributed */
+
 .app {
-  /* Removed styles that are now handled by MainLayout */
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden; 
+}
+
+
+.app__content {
+  display: flex;
+  flex-direction: column; /* para que el contenido no empuje la navbar */
+  flex: 1 0 auto;
+  padding-top: 90px; /* deja espacio para la navbar sticky */
 }
