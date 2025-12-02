@@ -52,6 +52,18 @@ function AuthPage({ setUser }) {
             </p>
           )}
         </div>
+
+         {/* FOOTER CON LINKS */}
+        <div className="auth-bottom-footer">
+          <a href="/politica" target="_blank" rel="noopener noreferrer">Política</a>
+            <span>•</span>
+          <a href="/privacidad" target="_blank" rel="noopener noreferrer">Privacidad</a>
+            <span>•</span>
+          <a href="/seguridad" target="_blank" rel="noopener noreferrer">Seguridad</a>
+            <span>•</span>
+          <a href="/contacto" target="_blank" rel="noopener noreferrer">Contacto</a>
+        </div>
+        
       </div>
     </div>
   );
