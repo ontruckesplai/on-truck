@@ -9,14 +9,24 @@
 }
 
 .sidebar-header {
-    padding: 20px;
+    padding: 15px;
     border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.sidebar-header h2 {
-    margin: 0;
-    color: var(--accent-primary);
-    font-size: 1.5rem;
+.sidebar-logo {
+    max-width: 100%;
+    height: auto;
+    max-height: 40px;
+    /* Adjust based on preference */
+    object-fit: contain;
+    transition: filter 0.3s;
+}
+
+.sidebar.dark .sidebar-logo {
+    filter: invert(1) brightness(1.5);
 }
 
 .sidebar-nav {

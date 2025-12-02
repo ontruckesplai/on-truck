@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useFleet } from "../context/FleetContext";
 import "./Sidebar.css";
+import logo from "../assets/logo_On-Truck_500x200-removebg-preview.png";
 
 function Sidebar() {
     const { darkMode } = useFleet();
@@ -8,7 +9,7 @@ function Sidebar() {
     return (
         <aside className={`sidebar ${darkMode ? "dark" : ""}`}>
             <div className="sidebar-header">
-                <h2>OnTruck</h2>
+                <img src={logo} alt="OnTruck Logo" className="sidebar-logo" />
             </div>
             <nav className="sidebar-nav">
                 <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
