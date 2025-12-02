@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: RemolqueRepository::class)]
 #[ORM\Table(name: "remolques")]
-class Remolque implements \JsonSerializable
+class Remolque
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
