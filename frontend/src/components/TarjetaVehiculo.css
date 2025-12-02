@@ -230,3 +230,23 @@
     font-weight: 700;
     color: var(--text-primary);
 }
+.btn-icon-edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon-edit:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .btn-icon-edit:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}

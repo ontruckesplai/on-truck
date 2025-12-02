@@ -35,11 +35,13 @@ CREATE TABLE `camiones` (
   `fin` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `notas` longtext COLLATE utf8mb4_unicode_ci,
   `tiene_remolque` tinyint(1) NOT NULL,
+  `modelo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fecha_itv` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_C64588C315DF1885` (`matricula`),
   UNIQUE KEY `UNIQ_C64588C37642CD57` (`remolque_id`),
   CONSTRAINT `FK_C64588C37642CD57` FOREIGN KEY (`remolque_id`) REFERENCES `remolques` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,7 +50,7 @@ CREATE TABLE `camiones` (
 
 LOCK TABLES `camiones` WRITE;
 /*!40000 ALTER TABLE `camiones` DISABLE KEYS */;
-INSERT INTO `camiones` VALUES (1,NULL,'1234-ABC',125000,120000,75,450,28.5,'Madrid','Barcelona','Camión en buen estado',0),(2,NULL,'5678-DEF',89000,80000,60,510,32,'Valencia','Sevilla','Revisión reciente',0),(3,NULL,'9012-GHI',340500,330000,45,450,29.8,NULL,NULL,'Necesita revisión pronto',0),(4,NULL,'3456-JKL',56000,50000,80,380,26.5,'Bilbao','Zaragoza','Camión nuevo',0),(5,NULL,'7890-MNO',198000,190000,55,510,31.2,'Granada','Málaga','En ruta actualmente',0),(6,NULL,'1234-remolque',12,1000,100,450,5.6,'Riudoms','Reus','Todo esta bien',0),(7,NULL,'gskjlfg',1,123,NULL,NULL,NULL,'','','',0),(13,NULL,'hoal',0,NULL,NULL,NULL,NULL,NULL,NULL,'',0),(14,NULL,'adios',0,NULL,NULL,NULL,NULL,NULL,NULL,'',0),(17,NULL,'asdkjfaskdf',0,NULL,NULL,NULL,NULL,NULL,NULL,'',0);
+INSERT INTO `camiones` VALUES (1,4,'1234-ABC',125000,80000,75,450,28.5,'Madrid','Barcelona','',1,NULL,NULL),(2,2,'5678-DEFF',89200,80000,60,510,32,'Valencia','Sevilla','hola',1,NULL,NULL),(3,NULL,'9012-GHI',340500,330500,45,450,29.8,NULL,NULL,'',0,'Volvo FH','2025-01-27'),(4,NULL,'3456-JKL',56000,50000,80,380,26.5,'Bilbao','Zaragoza','aquesta es una nota molt llarga de proba per veure si surt mes de una linea, mentres les altres tenen una revisio o algun manteniment. per ara no sacaba de verure del tot correcte',0,NULL,NULL),(5,NULL,'7890-MNO',198000,190000,55,510,31.2,'Granada','Málaga','En ruta actualmente',0,'Carles ara mateix','2001-11-21'),(6,NULL,'1234-remolque',12,1000,100,450,5.6,'Riudoms','Reus','Todo esta bien',0,NULL,NULL),(7,NULL,'Camion de prueba',190123,180000,NULL,550,9.8,'','','Esto es una nota de prueba\n',0,'Volvo Prueba','2025-11-27'),(13,NULL,'hoal',0,NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,NULL),(14,NULL,'adios',0,NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,NULL),(17,NULL,'asdkjfaskdf',0,NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,NULL),(18,NULL,'sdaflhsdaf',0,NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,NULL),(20,1,'camioin hola',0,NULL,NULL,NULL,NULL,NULL,NULL,'',1,NULL,NULL),(24,5,'1234-UIUX',12000,0,NULL,450,9.8,NULL,NULL,'',1,'Nuevo UI/UX','2025-11-21'),(25,NULL,'remolque test camion',0,NULL,NULL,NULL,NULL,NULL,NULL,'',0,'Camion test','2001-11-21');
 /*!40000 ALTER TABLE `camiones` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -61,4 +63,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-26 13:23:53
+-- Dump completed on 2025-12-02  9:52:44

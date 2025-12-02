@@ -60,7 +60,7 @@
 .distance-label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: white;
 }
 
 .btn-assign-minimal {

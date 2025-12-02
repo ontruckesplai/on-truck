@@ -30,7 +30,7 @@ CREATE TABLE `remolques` (
   `carga` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_BF6989E215DF1885` (`matricula`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,6 +39,7 @@ CREATE TABLE `remolques` (
 
 LOCK TABLES `remolques` WRITE;
 /*!40000 ALTER TABLE `remolques` DISABLE KEYS */;
+INSERT INTO `remolques` VALUES (1,'1234-rhb','Frigorifico',24000,0),(2,'hola','',NULL,0),(3,'remolque test','Lona',NULL,0),(4,'ruben prueba','',NULL,0),(5,'Joan Valorant','Radiant',100,0);
 /*!40000 ALTER TABLE `remolques` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-26 13:23:53
+-- Dump completed on 2025-12-02  9:52:44

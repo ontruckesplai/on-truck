@@ -36,7 +36,7 @@ CREATE TABLE `doctrine_migration_versions` (
 
 LOCK TABLES `doctrine_migration_versions` WRITE;
 /*!40000 ALTER TABLE `doctrine_migration_versions` DISABLE KEYS */;
-INSERT INTO `doctrine_migration_versions` VALUES ('DoctrineMigrations\\Version20251126111815','2025-11-26 11:18:25',89);
+INSERT INTO `doctrine_migration_versions` VALUES ('DoctrineMigrations\\Version20251126111815','2025-11-26 11:18:25',89),('DoctrineMigrations\\Version20251127105548','2025-11-27 10:56:00',20),('DoctrineMigrations\\Version20251129102612','2025-11-29 10:26:17',51),('DoctrineMigrations\\Version20251129113041','2025-11-29 11:31:16',12),('DoctrineMigrations\\Version20251129181008','2025-11-29 18:10:08',30);
 /*!40000 ALTER TABLE `doctrine_migration_versions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -49,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-26 13:23:53
+-- Dump completed on 2025-12-02  9:52:44

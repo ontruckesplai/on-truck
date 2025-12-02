@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Seguridad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f0f8ff;
+        }
+
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 1rem;
+            background: #ff6b6b;
+        }
+
+        .back-btn {
+            background: white;
+            color: #ff6b6b;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .content {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            color: #ff6b6b;
+        }
+
+        p {
+            line-height: 1.7;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <button class="back-btn" onclick="window.close()">Volver</button>
+    </div>
+
+    <div class="content">
+        <h1>Seguridad</h1>
+        <p>
+            Utilizamos sistemas avanzados de cifrado para garantizar la protección de tus datos y accesos.
+            Nuestro equipo monitoriza constantemente la plataforma para prevenir accesos no autorizados.
+        </p>
+        <p>
+            Recomendamos a todos los usuarios mantener contraseñas seguras y no compartirlas con terceros.
+        </p>
+    </div>
+
+</body>
+</html>

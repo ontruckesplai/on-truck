@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Privacidad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #fafafa;
+        }
+
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 1rem;
+            background: #6c63ff;
+        }
+
+        .back-btn {
+            background: white;
+            color: #6c63ff;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .content {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            color: #6c63ff;
+        }
+
+        p {
+            line-height: 1.7;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <button class="back-btn" onclick="window.close()">Volver</button>
+    </div>
+
+    <div class="content">
+        <h1>Política de Privacidad</h1>
+        <p>
+            La protección de tus datos personales es una prioridad. Toda la información que recopilamos es utilizada
+            únicamente para mejorar la plataforma y garantizar un servicio eficiente y seguro.
+        </p>
+        <p>
+            No compartimos datos personales con terceros sin consentimiento previo, salvo en casos estrictamente
+            necesarios para cumplir con regulaciones legales.
+        </p>
+    </div>
+
+</body>
+</html>
