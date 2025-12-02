@@ -16,37 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `rutas`
+-- Table structure for table `remolques`
 --
 
-DROP TABLE IF EXISTS `rutas`;
+DROP TABLE IF EXISTS `remolques`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `rutas` (
+CREATE TABLE `remolques` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `camion_id` int unsigned NOT NULL,
-  `distancia` int NOT NULL,
-  `duracion` int DEFAULT NULL,
-  `ubicacion` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ubicacion_recogida` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ubicacion_entrega` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `recogida_lat` decimal(10,8) DEFAULT NULL,
-  `recogida_lng` decimal(11,8) DEFAULT NULL,
-  `entrega_lat` decimal(10,8) DEFAULT NULL,
-  `entrega_lng` decimal(11,8) DEFAULT NULL,
+  `matricula` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `capacidad` int DEFAULT NULL,
+  `carga` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `IDX_FFC3AEF03A706D3` (`camion_id`),
-  CONSTRAINT `FK_FFC3AEF03A706D3` FOREIGN KEY (`camion_id`) REFERENCES `camiones` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `UNIQ_BF6989E215DF1885` (`matricula`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `rutas`
+-- Dumping data for table `remolques`
 --
 
-LOCK TABLES `rutas` WRITE;
-/*!40000 ALTER TABLE `rutas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `rutas` ENABLE KEYS */;
+LOCK TABLES `remolques` WRITE;
+/*!40000 ALTER TABLE `remolques` DISABLE KEYS */;
+INSERT INTO `remolques` VALUES (1,'1234-rhb','Frigorifico',24000,0),(2,'hola','',NULL,0),(3,'remolque test','Lona',NULL,0),(4,'ruben prueba','',NULL,0),(5,'Joan Valorant','Radiant',100,0);
+/*!40000 ALTER TABLE `remolques` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

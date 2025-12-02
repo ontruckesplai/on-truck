@@ -6,7 +6,7 @@ import Paginacion from "../components/Paginacion";
 import "./VehiculosPage.css";
 
 function VehiculosPage() {
-  const { vehiculos, deleteVehicle } = useFleet();
+  const { vehiculos, remolques, deleteVehicle, deleteRemolque } = useFleet();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterEstado, setFilterEstado] = useState("todos");
   const [showForm, setShowForm] = useState(false);
@@ -22,21 +22,46 @@ function VehiculosPage() {
   // Filtrado general (search + estado)
   const filteredVehiculos = vehiculos.filter((v) => {
     const matchesSearch =
-      v.matricula.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      v.modelo.toLowerCase().includes(searchTerm.toLowerCase());
+      (v.matricula?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (v.modelo?.toLowerCase() || "").includes(searchTerm.toLowerCase());
     const matchesEstado =
       filterEstado === "todos" || v.estado === filterEstado;
     return matchesSearch && matchesEstado;
   });
 
-  // Split into lists
+  // Split into lists and sort (Linked trucks first)
   const motorVehicles = filteredVehiculos.filter(v =>
     v.tipo === 'camion' || v.tipo === 'furgoneta'
-  );
+  ).sort((a, b) => {
+    // Prioritize vehicles with trailer
+    if (a.tiene_remolque && !b.tiene_remolque) return -1;
+    if (!a.tiene_remolque && b.tiene_remolque) return 1;
+    return 0;
+  });
 
-  const trailers = filteredVehiculos.filter(v =>
-    v.tipo === 'remolque'
-  );
+  // Identify linked trailers for sorting
+  const linkedTrailerIds = new Set(vehiculos.map(v => v.remolque_id).filter(id => id));
+
+  // Filter Remolques (search + estado) and sort (Linked trailers first)
+  // Note: Remolques might not have 'estado' yet, assuming 'Disponible'
+  const filteredRemolques = remolques.filter(r => {
+    const matchesSearch =
+      (r.matricula?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (r.tipo?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+    // Add state filter if needed, for now ignore or assume available
+    return matchesSearch;
+  }).map(r => ({
+    ...r,
+    tipo: 'remolque', // Force type for icon
+    modelo: r.tipo, // Show specific type as model
+    estado: 'Disponible' // Default state
+  })).sort((a, b) => {
+    const aLinked = linkedTrailerIds.has(a.id);
+    const bLinked = linkedTrailerIds.has(b.id);
+    if (aLinked && !bLinked) return -1;
+    if (!aLinked && bLinked) return 1;
+    return 0;
+  });
 
   // Pagination Logic
   const totalPagesMotor = Math.ceil(motorVehicles.length / itemsPerPageMotor);
@@ -45,8 +70,8 @@ function VehiculosPage() {
     pageMotor * itemsPerPageMotor
   );
 
-  const totalPagesRemolques = Math.ceil(trailers.length / itemsPerPageRemolques);
-  const paginatedRemolques = trailers.slice(
+  const totalPagesRemolques = Math.ceil(filteredRemolques.length / itemsPerPageRemolques);
+  const paginatedRemolques = filteredRemolques.slice(
     (pageRemolques - 1) * itemsPerPageRemolques,
     pageRemolques * itemsPerPageRemolques
   );
@@ -142,7 +167,6 @@ function VehiculosPage() {
         <VehicleForm
           onClose={() => setShowForm(false)}
           initialData={editingVehicle}
-          onDelete={deleteVehicle}
         />
       )}
     </div>

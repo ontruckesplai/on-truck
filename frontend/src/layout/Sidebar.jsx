@@ -17,6 +17,9 @@ function Sidebar() {
                 <NavLink to="/vehiculos" className={({ isActive }) => (isActive ? "active" : "")}>
                     Vehículos
                 </NavLink>
+                <NavLink to="/contratos" className={({ isActive }) => (isActive ? "active" : "")}>
+                    Contratos
+                </NavLink>
                 <NavLink to="/rutas" className={({ isActive }) => (isActive ? "active" : "")}>
                     Rutas
                 </NavLink>

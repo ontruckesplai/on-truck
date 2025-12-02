@@ -16,37 +16,34 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `rutas`
+-- Table structure for table `messenger_messages`
 --
 
-DROP TABLE IF EXISTS `rutas`;
+DROP TABLE IF EXISTS `messenger_messages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `rutas` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `camion_id` int unsigned NOT NULL,
-  `distancia` int NOT NULL,
-  `duracion` int DEFAULT NULL,
-  `ubicacion` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ubicacion_recogida` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ubicacion_entrega` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `recogida_lat` decimal(10,8) DEFAULT NULL,
-  `recogida_lng` decimal(11,8) DEFAULT NULL,
-  `entrega_lat` decimal(10,8) DEFAULT NULL,
-  `entrega_lng` decimal(11,8) DEFAULT NULL,
+CREATE TABLE `messenger_messages` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `body` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `headers` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue_name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+  `available_at` datetime NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+  `delivered_at` datetime DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
   PRIMARY KEY (`id`),
-  KEY `IDX_FFC3AEF03A706D3` (`camion_id`),
-  CONSTRAINT `FK_FFC3AEF03A706D3` FOREIGN KEY (`camion_id`) REFERENCES `camiones` (`id`) ON DELETE CASCADE
+  KEY `IDX_75EA56E0FB7336F0` (`queue_name`),
+  KEY `IDX_75EA56E0E3BD61CE` (`available_at`),
+  KEY `IDX_75EA56E016BA31DB` (`delivered_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `rutas`
+-- Dumping data for table `messenger_messages`
 --
 
-LOCK TABLES `rutas` WRITE;
-/*!40000 ALTER TABLE `rutas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `rutas` ENABLE KEYS */;
+LOCK TABLES `messenger_messages` WRITE;
+/*!40000 ALTER TABLE `messenger_messages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `messenger_messages` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

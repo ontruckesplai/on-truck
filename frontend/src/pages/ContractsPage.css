@@ -1,10 +1,10 @@
-.vehiculos-page {
+.contracts-page {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.vehiculos-header-actions {
+.contracts-header-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -55,7 +55,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-  /* Ensure visibility */
   opacity: 1;
 }
 
@@ -63,13 +62,7 @@
   background-color: var(--accent-hover);
 }
 
-.vehiculos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 20px;
-}
-
-.remolques-grid {
+.contracts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 20px;
