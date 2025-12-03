@@ -3,7 +3,6 @@
     border-radius: 16px;
     padding: 1.25rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -230,6 +229,7 @@
     font-weight: 700;
     color: var(--text-primary);
 }
+
 .btn-icon-edit {
     background: none;
     border: none;

@@ -4,7 +4,6 @@
     padding: 1rem;
     /* Reduced padding */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -322,13 +321,10 @@
     justify-content: center;
     gap: 0.4rem;
     padding: 0.4rem 0.8rem;
-    /* Smaller button padding */
     border-radius: 8px;
     font-size: 0.8rem;
-    /* Smaller font */
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
     border: none;
 }
 
