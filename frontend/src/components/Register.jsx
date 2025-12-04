@@ -21,13 +21,19 @@ function Register({ setUser, setIsLogin }) {
     }
 
     try {
+      // Enviar solo lo que el backend espera
+      const payload = { email, password };
+      // Si tu backend soporta nombre y apellido, descomenta:
+      // payload.nombre = nombre; payload.apellido = apellido;
+
       const res = await fetch("http://localhost:8000/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, apellido, email, password }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
+      console.log("Respuesta backend:", data);
 
       if (!res.ok) {
         setMessage(data.error || "Registro incorrecto");
@@ -48,6 +54,7 @@ function Register({ setUser, setIsLogin }) {
         }, 1000);
       }
     } catch (err) {
+      console.error("Error al conectar con el servidor:", err);
       setMessage("Error al conectar con el servidor");
       setMessageColor("red");
     }
@@ -55,65 +62,55 @@ function Register({ setUser, setIsLogin }) {
 
   return (
     <form onSubmit={handleRegister}>
-  {message && <p style={{ color: messageColor, marginBottom: "1rem" }}>{message}</p>}
+      {message && <p style={{ color: messageColor, marginBottom: "1rem" }}>{message}</p>}
 
-  <div className="form-group">
-    <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-  </div>
+      <div className="form-group">
+        <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+      </div>
 
-  <div className="form-group">
-    <input type="text" placeholder="Apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} required />
-  </div>
+      <div className="form-group">
+        <input type="text" placeholder="Apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} required />
+      </div>
 
-  <div className="form-group">
-    <input type="email" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} required />
-  </div>
+      <div className="form-group">
+        <input type="email" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      </div>
 
-  <div className="form-group">
-    <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
-  </div>
+      <div className="form-group">
+        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      </div>
 
-  <div className="terms-row">
-  <label className="terms-label">
-    <input
-      type="checkbox"
-      checked={accepted}
-      onChange={(e) => setAccepted(e.target.checked)}
-    />
-    <span>
-      Acepto los{" "}
-      <a href="/terminos" target="_blank" rel="noopener noreferrer">
-        términos y condiciones
-      </a>
-    </span>
-  </label>
+      <div className="terms-row">
+        <label className="terms-label">
+          <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
+          <span>
+            Acepto los{" "}
+            <a href="/terminos" target="_blank" rel="noopener noreferrer">
+              términos y condiciones
+            </a>
+          </span>
+        </label>
 
-  <button
-    type="button"
-    className="toggle-terms"
-    onClick={() => setShowTerms(!showTerms)}
-  >
-    <span>{showTerms ? "▲" : "▼"}</span>
-  </button>
-</div>
+        <button type="button" className="toggle-terms" onClick={() => setShowTerms(!showTerms)}>
+          <span>{showTerms ? "▲" : "▼"}</span>
+        </button>
+      </div>
 
-{!accepted && messageColor === "red" && (
-  <p className="terms-error">Debes aceptar los términos para continuar</p>
-)}
+      {!accepted && messageColor === "red" && (
+        <p className="terms-error">Debes aceptar los términos para continuar</p>
+      )}
 
-{showTerms && (
-  <div className="terms-box">
-    <p>
-      Aquí van los términos y condiciones del servicio. Puedes incluir cualquier texto legal, cláusulas de uso,
-      protección de datos, etc.
-    </p>
-  </div>
-)}
+      {showTerms && (
+        <div className="terms-box">
+          <p>
+            Aquí van los términos y condiciones del servicio. Puedes incluir cualquier texto legal, cláusulas de uso,
+            protección de datos, etc.
+          </p>
+        </div>
+      )}
 
-
-  <button type="submit">Registrarse</button>
-</form>
-
+      <button type="submit">Registrarse</button>
+    </form>
   );
 }
 
