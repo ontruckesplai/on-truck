@@ -26,6 +26,8 @@ security:
             # Aquí configuras tu login normal, etc.
 
     access_control:
+        - { path: ^/api/contratos/simular, roles: PUBLIC_ACCESS }
+        - { path: ^/api/contratos/validar, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

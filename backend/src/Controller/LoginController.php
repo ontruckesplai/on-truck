@@ -11,8 +11,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class LoginController extends AbstractController
-{
-    private $jwt_secret = 'TU_SECRETO_SUPER_SEGURO';
+{//private $jwt_secret = 'TU_SECRETO_SUPER_SEGURO';
+    private $jwt_secret = 'ae0b727ed678314746cc0c3e23fa5e515041f87aada8439b17cc381a59957f4b';
     private $entityManager;
     private $passwordHasher;
 
