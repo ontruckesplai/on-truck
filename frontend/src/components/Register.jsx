@@ -21,10 +21,12 @@ function Register({ setUser, setIsLogin }) {
     }
 
     try {
-      // Enviar solo lo que el backend espera
-      const payload = { email, password };
-      // Si tu backend soporta nombre y apellido, descomenta:
-      // payload.nombre = nombre; payload.apellido = apellido;
+      const payload = {
+        email,
+        password,
+        firstName: nombre,   // <-- clave exacta que espera tu backend
+        lastName: apellido   // <-- clave exacta que espera tu backend
+      };
 
       const res = await fetch("http://localhost:8000/api/register", {
         method: "POST",

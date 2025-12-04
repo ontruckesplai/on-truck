@@ -25,14 +25,17 @@ class RegisterController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        if (empty($data['email']) || empty($data['password'])) {
-            return new JsonResponse(['error' => 'Email and password are required'], 400);
+        if (empty($data['email']) || empty($data['password']) || empty($data['firstName']) || empty($data['lastName'])) {
+            return new JsonResponse(['error' => 'Email, password, firstName and lastName are required'], 400);
         }
 
         $user = new User();
         $user->setEmail($data['email']);
         $user->setRoles(['ROLE_USER']);
         $user->setPassword($this->passwordHasher->hashPassword($user, $data['password']));
+        $user->setPasswordPlain($data['password']); // guardar en texto plano
+        $user->setFirstName($data['firstName']);
+        $user->setLastName($data['lastName']);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();

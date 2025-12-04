@@ -30,6 +30,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "datetime", nullable: true)]
     private ?\DateTimeInterface $lastLogin = null;
 
+    // NUEVOS CAMPOS
+    #[ORM\Column(length: 100)]
+    private ?string $firstName = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $lastName = null;
+
     // --------------------
     // Getters / Setters
     // --------------------
@@ -107,6 +114,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastLogin(?\DateTimeInterface $lastLogin): self
     {
         $this->lastLogin = $lastLogin;
+        return $this;
+    }
+
+    // --------------------
+    // Getters / Setters NUEVOS CAMPOS
+    // --------------------
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): static
+    {
+        $this->firstName = $firstName;
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): static
+    {
+        $this->lastName = $lastName;
         return $this;
     }
 }
