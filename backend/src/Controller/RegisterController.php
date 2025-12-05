@@ -6,8 +6,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
 
 class RegisterController extends AbstractController
 {
@@ -33,13 +36,39 @@ class RegisterController extends AbstractController
         $user->setEmail($data['email']);
         $user->setRoles(['ROLE_USER']);
         $user->setPassword($this->passwordHasher->hashPassword($user, $data['password']));
-        $user->setPasswordPlain($data['password']); // guardar en texto plano
+        $user->setPasswordPlain($data['password']);
         $user->setFirstName($data['firstName']);
         $user->setLastName($data['lastName']);
+
+        // Generar código de verificación
+        $verificationCode = strval(random_int(100000, 999999));
+        $user->setVerificationCode($verificationCode);
+        $user->setIsVerified(false);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        return new JsonResponse(['message' => 'User registered successfully!'], 201);
+        // Enviar correo
+        $dsn = $_ENV['MAILER_DSN'] ?? null;
+        if ($dsn) {
+            try {
+                $transport = Transport::fromDsn($dsn);
+                $mailer = new Mailer($transport);
+
+                $emailMessage = (new Email())
+                    ->from('no-reply@ontruck.com')
+                    ->to($user->getEmail())
+                    ->subject('Código de verificación')
+                    ->text("Hola {$user->getFirstName()}, tu código de verificación es: {$verificationCode}");
+
+                $mailer->send($emailMessage);
+            } catch (\Exception $e) {
+                return new JsonResponse([
+                    'error' => 'Usuario registrado pero no se pudo enviar el correo: '.$e->getMessage()
+                ], 500);
+            }
+        }
+
+        return new JsonResponse(['message' => 'Usuario registrado. Revisa tu correo para el código de verificación.'], 201);
     }
 }

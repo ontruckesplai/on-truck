@@ -30,17 +30,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "datetime", nullable: true)]
     private ?\DateTimeInterface $lastLogin = null;
 
-    // NUEVOS CAMPOS
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $firstName = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $lastName = null;
+
+    // --------------------
+    // Verificación
+    // --------------------
+    #[ORM\Column(type: 'string', length: 6, nullable: true)]
+    private ?string $verificationCode = null;
+
+    #[ORM\Column(type: "boolean")]
+    private bool $isVerified = false;
 
     // --------------------
     // Getters / Setters
     // --------------------
-
     public function getId(): ?int
     {
         return $this->id;
@@ -65,11 +72,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-
         if (!in_array("ROLE_USER", $roles)) {
             $roles[] = "ROLE_USER";
         }
-
         return array_unique($roles);
     }
 
@@ -117,9 +122,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // --------------------
-    // Getters / Setters NUEVOS CAMPOS
-    // --------------------
     public function getFirstName(): ?string
     {
         return $this->firstName;
@@ -139,6 +141,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastName(string $lastName): static
     {
         $this->lastName = $lastName;
+        return $this;
+    }
+
+    // --------------------
+    // Verificación
+    // --------------------
+    public function getVerificationCode(): ?string
+    {
+        return $this->verificationCode;
+    }
+
+    public function setVerificationCode(?string $verificationCode): self
+    {
+        $this->verificationCode = $verificationCode;
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function getIsVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
         return $this;
     }
 }
