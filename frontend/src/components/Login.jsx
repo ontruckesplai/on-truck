@@ -8,6 +8,9 @@ function Login({ setUser }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+  // 🚨 BORRAR TOKEN ANTIGUO PARA EVITAR USO DE JWT CADUCADO
+
+      localStorage.removeItem("token");
 
     try {
       const res = await fetch("http://localhost:8000/api/login", {
@@ -21,7 +24,9 @@ function Login({ setUser }) {
       if (!res.ok) {
         setError("Correo o contraseña incorrecto");
       } else {
-        localStorage.setItem("token", data.token);
+        const token_user =data.token;
+        //localStorage.setItem("token", data.token);
+        localStorage.setItem("token", token_user);
         setUser({ email });
       }
     } catch (err) {

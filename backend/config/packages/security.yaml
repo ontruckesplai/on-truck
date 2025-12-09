@@ -18,16 +18,17 @@ security:
             pattern: ^/api
             stateless: true
             provider: app_user_provider
-            # Aquí se pueden añadir autentificadores si quieres JWT o login
+            lazy: true
+            custom_authenticators:
+                - App\Security\JwtAuthenticator
 
         main:
             lazy: true
             provider: app_user_provider
-            # Aquí configuras tu login normal, etc.
 
     access_control:
-        - { path: ^/api/contratos/simular, roles: PUBLIC_ACCESS }
-        - { path: ^/api/contratos/validar, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/contratos/simular, roles: PUBLIC_ACCESS }
+        - { path: ^/api/contratos/validar, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

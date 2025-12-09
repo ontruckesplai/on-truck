@@ -1,18 +1,24 @@
-# config/services.yaml
 parameters:
+    jwt_secret: 'TU_SECRETO_SUPER_SEGURO'
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
-    # REGISTRA TODOS LOS CONTROLADORES
+    # REGISTRO DEL AUTHENTICATOR → debe ir ANTES de App\:
+    App\Security\JwtAuthenticator:
+        arguments:
+            $jwtSecret: '%jwt_secret%'
+
+    # Controladores
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
 
-    # REGISTRA EL RESTO DE CLASES NORMALMENTE
+    # Todo lo demás
     App\:
         resource: '../src/'
         exclude:
             - '../src/Controller/'
+            - '../src/Security/JwtAuthenticator.php'   # ← IMPORTANTE!
