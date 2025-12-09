@@ -94,7 +94,7 @@ function ContractForm({ onClose, initialData = null }) {
             const data = await response.json();
 
             if (data.success) {
-                setAssignments(prev => prev.filter(a => a.id !== assignmentToDelete));
+                setAssignments(prev => prev.filter(a => a.id !== assignmentToDelete.id));
                 setAssignmentToDelete(null);
             } else {
                 alert(data.message || "Error al eliminar asignación");
