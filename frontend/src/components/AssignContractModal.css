@@ -1,0 +1,96 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    color: var(--text-primary);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-color);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.estimation-box {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    background: rgba(66, 153, 225, 0.1);
+    border: 1px solid rgba(66, 153, 225, 0.2);
+}
+
+.estimation-box.late {
+    background: rgba(245, 101, 101, 0.1);
+    border-color: rgba(245, 101, 101, 0.4);
+    color: #e53e3e;
+    /* Red for light mode/dark mode safe */
+}
+
+.estimation-box.ontime {
+    background: rgba(72, 187, 120, 0.1);
+    border-color: rgba(72, 187, 120, 0.4);
+    color: #38a169;
+}
+
+.warning-text {
+    color: #e53e3e;
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+/* Dark mode adjustments via CSS variables or direct override */
+body.dark-mode .estimation-box.late {
+    color: #fc8181;
+}
+
+body.dark-mode .estimation-box.ontime {
+    color: #68d391;
+}
+
+.estimation-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+}
+
+.estimation-box li {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.btn-add-contract {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-add-contract:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}

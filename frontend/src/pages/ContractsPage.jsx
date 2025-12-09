@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ContractForm from '../components/ContractForm';
 import TarjetaContrato from '../components/TarjetaContrato';
+import AssignTruckDrawer from '../components/AssignTruckDrawer';
 import './ContractsPage.css';
 
 const ContractsPage = () => {
@@ -8,6 +9,7 @@ const ContractsPage = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingContract, setEditingContract] = useState(null);
+    const [assigningContract, setAssigningContract] = useState(null); // State for drawer
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("todos");
 
@@ -37,6 +39,12 @@ const ContractsPage = () => {
         setShowForm(true);
     };
 
+    const handleAssignClick = (contract) => {
+        // Reuse the Edit form for assignment
+        setEditingContract(contract);
+        setShowForm(true);
+    };
+
     // Filter Logic
     const filteredContracts = contracts.filter(contract => {
         const matchesSearch =
@@ -52,6 +60,11 @@ const ContractsPage = () => {
     const handleCloseForm = () => {
         setShowForm(false);
         fetchContracts(); // Refresh list after add/edit/delete
+    };
+
+    const handleCloseAssign = () => {
+        setAssigningContract(null);
+        fetchContracts(); // Refresh in case assignment changed status (though usually FleetContext should handle it, data sync is safer)
     };
 
     return (
@@ -90,6 +103,7 @@ const ContractsPage = () => {
                             key={contract.id}
                             contract={contract}
                             onClick={handleEditClick}
+                            onAssign={handleAssignClick}
                         />
                     ))}
 
@@ -115,6 +129,13 @@ const ContractsPage = () => {
                 <ContractForm
                     onClose={handleCloseForm}
                     initialData={editingContract}
+                />
+            )}
+
+            {assigningContract && (
+                <AssignTruckDrawer
+                    contract={assigningContract}
+                    onClose={handleCloseAssign}
                 />
             )}
         </div>

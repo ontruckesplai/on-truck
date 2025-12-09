@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MapaRuta from "./MapaRuta";
+import { useFleet } from "../context/FleetContext";
 import "./TarjetaContrato.css";
 import "./MapaRuta.css"; // Ensure map modal styles are available
 
@@ -13,7 +14,8 @@ const IconoContrato = () => (
     </svg>
 );
 
-function TarjetaContrato({ contract, onClick }) {
+function TarjetaContrato({ contract, onClick, onAssign }) {
+    const { vehiculos } = useFleet();
     const [showMap, setShowMap] = useState(false);
 
     const statusColors = {
@@ -23,6 +25,21 @@ function TarjetaContrato({ contract, onClick }) {
     };
 
     const statusStyle = statusColors[contract.status] || statusColors["pending"];
+
+    // Check for active assignment
+    const activeAssignment = contract.asignaciones?.find(a => a.estado !== 'COMPLETADO');
+    const linkedTruckName = activeAssignment ? (activeAssignment.camion_id || "Camión Asignado") : null;
+    // Note: The backend serialization of CamionContrato returns camion_id. 
+    // ideally we want the plate or model. Let's assume we might need to fetch it or context has it.
+    // Actually, FleetContext has all trucks. We can look it up.
+
+    // However, to keep it simple and fast without extra lookups if not needed:
+    // We will trust 'activeAssignment' exists. 
+    // To get the truck details properly, we might need to look into 'vehiculos' from context if we want the plate.
+    // usage of useFleet inside the item component is fine.
+
+
+
 
     // Prepare data for MapaRuta
     const mapData = {
@@ -183,9 +200,23 @@ function TarjetaContrato({ contract, onClick }) {
                 </div>
 
                 <div className="tarjeta-actions">
-                    <button className="btn-action secondary" onClick={(e) => e.stopPropagation()}>
-                        <span>🚛</span> Asignar Camión
-                    </button>
+                    {activeAssignment ? (
+                        <div className="linked-truck-info">
+                            <span className="truck-icon">🚛</span>
+                            <div className="truck-details">
+                                <span className="truck-label">Vehículo Asignado</span>
+                                <span className="truck-value">
+                                    {/* Try to find truck in context, else show ID */}
+                                    {vehiculos.find(v => v.id === activeAssignment.camion_id)?.matricula || `ID: ${activeAssignment.camion_id}`}
+                                </span>
+                            </div>
+                        </div>
+                    ) : (
+                        <button className="btn-action secondary" onClick={(e) => { e.stopPropagation(); onAssign(contract); }}>
+                            <span>🚛</span> Asignar Camión
+                        </button>
+                    )}
+
                     <button className="btn-action primary" onClick={handleMapClick}>
                         <span>🗺️</span> Ver Mapa
                     </button>

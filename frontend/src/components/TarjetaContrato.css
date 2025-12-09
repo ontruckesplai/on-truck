@@ -193,12 +193,20 @@
 
 /* --- Aesthetic Progress Bars --- */
 .progress-section {
-    margin-top: 0.5rem;
-    /* Reduced margin */
+    margin-top: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    /* Reduced gap */
+    /* Stacked vertically */
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+}
+
+@media (max-width: 480px) {
+    .progress-section {
+        grid-template-columns: 1fr;
+        /* Stack on mobile */
+    }
 }
 
 .progress-group {

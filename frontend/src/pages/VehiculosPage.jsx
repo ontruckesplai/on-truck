@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFleet } from "../context/FleetContext";
+import { useLocation } from "react-router-dom";
 import TarjetaVehiculo from "../components/TarjetaVehiculo";
 import VehicleForm from "../components/VehicleForm";
 import Paginacion from "../components/Paginacion";
 import "./VehiculosPage.css";
 
 function VehiculosPage() {
-  const { vehiculos, remolques, deleteVehicle, deleteRemolque } = useFleet();
+  const { vehiculos, remolques } = useFleet();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterEstado, setFilterEstado] = useState("todos");
   const [showForm, setShowForm] = useState(false);
@@ -18,6 +20,22 @@ function VehiculosPage() {
 
   const itemsPerPageMotor = 10;
   const itemsPerPageRemolques = 10;
+
+  // Deep linking: Open vehicle if passed in state
+  useEffect(() => {
+    if (location.state?.openVehicleId && vehiculos.length > 0) {
+      const vehicleToOpen = vehiculos.find(v => v.id === parseInt(location.state.openVehicleId));
+      if (vehicleToOpen) {
+        setEditingVehicle(vehicleToOpen);
+        setShowForm(true);
+        // Clear state to prevent reopening on generic re-renders? 
+        // React Router history state persists, but typically we only want this on mount/navigation.
+        // We can leave it, or user might need to navigate away and back.
+        // Usually good enough for this use case.
+        window.history.replaceState({}, document.title); // Clean state to avoid reopening on refresh
+      }
+    }
+  }, [location.state, vehiculos]);
 
   // Filtrado general (search + estado)
   const filteredVehiculos = vehiculos.filter((v) => {
@@ -43,18 +61,16 @@ function VehiculosPage() {
   const linkedTrailerIds = new Set(vehiculos.map(v => v.remolque_id).filter(id => id));
 
   // Filter Remolques (search + estado) and sort (Linked trailers first)
-  // Note: Remolques might not have 'estado' yet, assuming 'Disponible'
   const filteredRemolques = remolques.filter(r => {
     const matchesSearch =
       (r.matricula?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
       (r.tipo?.toLowerCase() || "").includes(searchTerm.toLowerCase());
-    // Add state filter if needed, for now ignore or assume available
     return matchesSearch;
   }).map(r => ({
     ...r,
-    tipo: 'remolque', // Force type for icon
-    modelo: r.tipo, // Show specific type as model
-    estado: 'Disponible' // Default state
+    tipo: 'remolque',
+    modelo: r.tipo,
+    estado: 'Disponible'
   })).sort((a, b) => {
     const aLinked = linkedTrailerIds.has(a.id);
     const bLinked = linkedTrailerIds.has(b.id);

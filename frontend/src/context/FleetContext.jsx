@@ -18,6 +18,7 @@ export const FleetProvider = ({ children }) => {
     // Listas de datos que vienen del servidor (Backend)
     const [vehiculos, setVehiculos] = useState([]);
     const [remolques, setRemolques] = useState([]);
+    const [contracts, setContracts] = useState([]);
 
     // Estado para saber si estamos cargando los datos
     const [loading, setLoading] = useState(true);
@@ -88,6 +89,14 @@ export const FleetProvider = ({ children }) => {
                     setRemolques(listaRemolques);
                 }
 
+                // 3. Pedimos los contratos
+                const respuestaContracts = await fetch('http://127.0.0.1:8000/api/contracts');
+                const datosContracts = await respuestaContracts.json();
+                if (datosContracts) {
+                    setContracts(datosContracts);
+                }
+
+
             } catch (error) {
                 console.error('Hubo un error al cargar los datos:', error);
             } finally {
@@ -138,10 +147,12 @@ export const FleetProvider = ({ children }) => {
             notas: camion.notas,
             tiene_remolque: camion.tieneRemolque,
             remolque_id: camion.remolque?.id || null,
+            remolque: camion.remolque || null, // Preserve full trailer object for capacity info
             modelo: camion.modelo,
             fecha_itv: camion.fechaItv,
             tipo: "camion",
-            estado: calcularEstadoCamion(camion)
+            estado: calcularEstadoCamion(camion),
+            asignaciones: camion.asignaciones || []
         };
     };
 
@@ -255,6 +266,30 @@ export const FleetProvider = ({ children }) => {
         }
     };
 
+    // ASIGNAR CONTRATO A CAMIÓN
+    const assignContract = async (assignmentData) => {
+        try {
+            const respuesta = await fetch('http://127.0.0.1:8000/api/assign-contract', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(assignmentData)
+            });
+            const resultado = await respuesta.json();
+
+            if (resultado.success) {
+                // Podríamos actualizar el vehículo localmente si quisiéramos mostrar el estado ocupado inmediato
+                // O recargar vehículos
+                return resultado.data;
+            } else {
+                return { error: resultado.message };
+            }
+        } catch (error) {
+            console.error('Error al asignar contrato:', error);
+            return { error: "Error de conexión" };
+        }
+    };
+
+
     // VINCULAR REMOLQUES A CAMIONES
     const linkRemolque = async (camionId, remolqueId) => {
         try {
@@ -301,6 +336,7 @@ export const FleetProvider = ({ children }) => {
                 // Datos
                 vehiculos,
                 remolques,
+                contracts, // Export contracts
                 rutas,
                 loading,
                 darkMode,
@@ -318,6 +354,8 @@ export const FleetProvider = ({ children }) => {
                 // Funciones para Vincular
                 linkRemolque,
                 unlinkRemolque,
+                assignContract, // Export assignment function
+
 
                 // Funciones varias
                 toggleTheme

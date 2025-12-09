@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useFleet } from "../context/FleetContext";
 import "./TarjetaVehiculo.css";
 
@@ -136,6 +137,7 @@ function TarjetaVehiculo({ vehiculo, onEdit }) {
   const isCamion = vehiculo.tipo === 'camion';
   const isRemolque = vehiculo.tipo === 'remolque';
 
+
   // Datos para el renderizado
   let linkedEntity = null;
 
@@ -163,7 +165,9 @@ function TarjetaVehiculo({ vehiculo, onEdit }) {
           <span className="icono-vehiculo">{tiposVehiculo[vehiculo.tipo || 'camion']?.icono || <IconoCamion />}</span>
           <span className="tipo-texto">{tiposVehiculo[vehiculo.tipo || 'camion']?.nombre || "Vehículo"}</span>
         </div>
-        <span className={`estado-badge ${claseEstado}`}>{estado}</span>
+        <div className="status-column">
+          <span className={`estado-badge ${claseEstado}`}>{estado}</span>
+        </div>
       </div>
 
       {/* Cuerpo: Matrícula + Modelo */}
@@ -207,7 +211,7 @@ function TarjetaVehiculo({ vehiculo, onEdit }) {
         </div>
       )}
 
-      {/* Sección de Vinculación (Solo visualización) */}
+      {/* Sección de Vinculación */}
       {linkedEntity && (
         <div className="vinculacion-section">
           <div className="vinculado-info">

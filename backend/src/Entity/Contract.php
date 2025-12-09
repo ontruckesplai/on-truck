@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\ContractRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: ContractRepository::class)]
-class Contract
+class Contract implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -56,9 +58,13 @@ class Contract
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
 
+    #[ORM\OneToMany(mappedBy: 'contract', targetEntity: CamionContrato::class)]
+    private Collection $asignaciones;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
+        $this->asignaciones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -232,5 +238,57 @@ class Contract
         $this->status = $status;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, CamionContrato>
+     */
+    public function getAsignaciones(): Collection
+    {
+        return $this->asignaciones;
+    }
+
+    public function addAsignacion(CamionContrato $asignacion): static
+    {
+        if (!$this->asignaciones->contains($asignacion)) {
+            $this->asignaciones->add($asignacion);
+            $asignacion->setContract($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAsignacion(CamionContrato $asignacion): static
+    {
+        if ($this->asignaciones->removeElement($asignacion)) {
+            // set the owning side to null (unless already changed)
+            if ($asignacion->getContract() === $this) {
+                $asignacion->setContract(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'client_name' => $this->clientName,
+            'total_quantity' => $this->totalQuantity,
+            'product_type' => $this->productType,
+            'deadline' => $this->deadline?->format('Y-m-d'),
+            'origin_address' => $this->originAddress,
+            'origin_lat' => $this->originLat,
+            'origin_lon' => $this->originLon,
+            'destination_address' => $this->destinationAddress,
+            'destination_lat' => $this->destinationLat,
+            'destination_lon' => $this->destinationLon,
+            'status' => $this->status,
+            'distance_km' => $this->distanceKm,
+            'delivered_quantity' => $this->deliveredQuantity,
+            'created_at' => $this->createdAt?->format('Y-m-d H:i:s'),
+            'asignaciones' => $this->asignaciones->map(fn($a) => $a->jsonSerialize())->toArray(),
+        ];
     }
 }

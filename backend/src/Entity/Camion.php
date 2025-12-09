@@ -4,11 +4,18 @@ namespace App\Entity;
 
 use App\Repository\CamionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: CamionRepository::class)]
 #[ORM\Table(name: "camiones")]
 class Camion implements \JsonSerializable
 {
+    public function __construct()
+    {
+        $this->asignaciones = new ArrayCollection();
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", options: ["unsigned" => true])]
@@ -53,6 +60,10 @@ class Camion implements \JsonSerializable
 
     #[ORM\Column(type: "date", nullable: true)]
     private ?\DateTimeInterface $fecha_itv = null;
+
+    #[ORM\OneToMany(mappedBy: 'camion', targetEntity: CamionContrato::class, orphanRemoval: true)]
+    private Collection $asignaciones;
+
 
     // --------------------
     // Getters / Setters
@@ -206,6 +217,37 @@ class Camion implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return Collection<int, CamionContrato>
+     */
+    public function getAsignaciones(): Collection
+    {
+        return $this->asignaciones;
+    }
+
+    public function addAsignacion(CamionContrato $asignacion): self
+    {
+        if (!$this->asignaciones->contains($asignacion)) {
+            $this->asignaciones->add($asignacion);
+            $asignacion->setCamion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAsignacion(CamionContrato $asignacion): self
+    {
+        if ($this->asignaciones->removeElement($asignacion)) {
+            // set the owning side to null (unless already changed)
+            if ($asignacion->getCamion() === $this) {
+                $asignacion->setCamion(null);
+            }
+        }
+
+        return $this;
+    }
+
+
     public function jsonSerialize(): array
     {
         return [
@@ -223,6 +265,7 @@ class Camion implements \JsonSerializable
             'remolque' => $this->remolque,
             'modelo' => $this->modelo,
             'fechaItv' => $this->fecha_itv?->format('Y-m-d'),
+            'asignaciones' => $this->asignaciones->map(fn($a) => $a->jsonSerialize())->toArray(),
         ];
     }
 }
