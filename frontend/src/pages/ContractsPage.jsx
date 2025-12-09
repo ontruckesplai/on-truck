@@ -1,48 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ContractForm from '../components/ContractForm';
 import TarjetaContrato from '../components/TarjetaContrato';
 import AssignTruckDrawer from '../components/AssignTruckDrawer';
+import { useFleet } from '../context/FleetContext';
 import './ContractsPage.css';
 
-
-//AUTOFECTH, LUEGO HAY QUE QUITAR EL CONTENT TYPE ETC!
-const authFetch = (url, options = {}) => {
-    const token = localStorage.getItem("token");
-
-    return fetch(url, {
-        ...options,
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-            ...(options.headers || {})
-        }
-    });
-};
-
 const ContractsPage = () => {
-    const [contracts, setContracts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { contracts, loading } = useFleet();
     const [showForm, setShowForm] = useState(false);
     const [editingContract, setEditingContract] = useState(null);
-    const [assigningContract, setAssigningContract] = useState(null); // State for drawer
+    const [assigningContract, setAssigningContract] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("todos");
 
-    useEffect(() => {
-        fetchContracts();
-    }, []);
-
-    const fetchContracts = async () => {
-        try {
-            const response = await authFetch('http://localhost:8000/api/contracts');
-            const data = await response.json();
-            setContracts(data);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching contracts:', error);
-            setLoading(false);
-        }
-    };
+    // fetchContracts removed as it comes from context
 
     const handleAddClick = () => {
         setEditingContract(null);
@@ -74,12 +45,10 @@ const ContractsPage = () => {
 
     const handleCloseForm = () => {
         setShowForm(false);
-        fetchContracts(); // Refresh list after add/edit/delete
     };
 
     const handleCloseAssign = () => {
         setAssigningContract(null);
-        fetchContracts(); // Refresh in case assignment changed status (though usually FleetContext should handle it, data sync is safer)
     };
 
     return (

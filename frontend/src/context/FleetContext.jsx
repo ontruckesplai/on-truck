@@ -1,21 +1,10 @@
 import { createContext, useState, useContext, useEffect } from "react";
+import { authFetch } from "../services/api"; // Import centralized authFetch
 
 // Creamos el contexto para compartir los datos en toda la app
 const FleetContext = createContext();
 
-//AUTOFECTH, LUEGO HAY QUE QUITAR EL CONTENT TYPE ETC!
-const authFetch = (url, options = {}) => {
-    const token = localStorage.getItem("token");
-
-    return fetch(url, {
-        ...options,
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-            ...(options.headers || {})
-        }
-    });
-};
+// Local authFetch removed in favor of imported one
 
 
 
@@ -85,7 +74,7 @@ export const FleetProvider = ({ children }) => {
         const cargarDatos = async () => {
             try {
                 // 1. Pedimos los camiones
-                const respuestaCamiones = await authFetch('http://127.0.0.1:8000/api/camiones');
+                const respuestaCamiones = await authFetch('/camiones');
                 const datosCamiones = await respuestaCamiones.json();
 
                 if (datosCamiones) {
@@ -98,7 +87,7 @@ export const FleetProvider = ({ children }) => {
                 }
 
                 // 2. Pedimos los remolques
-                const respuestaRemolques = await authFetch('http://127.0.0.1:8000/api/remolques');
+                const respuestaRemolques = await authFetch('/remolques');
                 const datosRemolques = await respuestaRemolques.json();
 
                 if (datosRemolques) {
@@ -107,7 +96,7 @@ export const FleetProvider = ({ children }) => {
                 }
 
                 // 3. Pedimos los contratos
-                const respuestaContracts = await fetch('http://127.0.0.1:8000/api/contracts');
+                const respuestaContracts = await authFetch('/contracts');
                 const datosContracts = await respuestaContracts.json();
                 if (datosContracts) {
                     setContracts(datosContracts);
@@ -178,7 +167,7 @@ export const FleetProvider = ({ children }) => {
     // CAMIONES
     const addVehicle = async (nuevoVehiculo) => {
         try {
-            const respuesta = await authFetch('http://127.0.0.1:8000/api/camiones', {
+            const respuesta = await authFetch('/camiones', {
                 method: 'POST',
                 body: JSON.stringify(nuevoVehiculo)
             });
@@ -198,7 +187,7 @@ export const FleetProvider = ({ children }) => {
 
     const updateVehicle = async (id, datosActualizados) => {
         try {
-            const respuesta = await authFetch(`http://127.0.0.1:8000/api/camiones/${id}`, {
+            const respuesta = await authFetch(`/camiones/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify(datosActualizados)
             });
@@ -217,7 +206,7 @@ export const FleetProvider = ({ children }) => {
 
     const deleteVehicle = async (id) => {
         try {
-            const respuesta = await authFetch(`http://127.0.0.1:8000/api/camiones/${id}`, {
+            const respuesta = await authFetch(`/camiones/${id}`, {
                 method: 'DELETE'
             });
 
@@ -233,7 +222,7 @@ export const FleetProvider = ({ children }) => {
     // REMOLQUES
     const addRemolque = async (nuevoRemolque) => {
         try {
-            const respuesta = await authFetch('http://127.0.0.1:8000/api/remolques', {
+            const respuesta = await authFetch('/remolques', {
                 method: 'POST',
                 body: JSON.stringify(nuevoRemolque)
             });
@@ -251,7 +240,7 @@ export const FleetProvider = ({ children }) => {
 
     const updateRemolque = async (id, datosActualizados) => {
         try {
-            const respuesta = await authFetch(`http://127.0.0.1:8000/api/remolques/${id}`, {
+            const respuesta = await authFetch(`/remolques/${id}`, {
                 method: 'PUT',
                 body: JSON.stringify(datosActualizados)
             });
@@ -267,7 +256,7 @@ export const FleetProvider = ({ children }) => {
 
     const deleteRemolque = async (id) => {
         try {
-            const respuesta = await authFetch(`http://127.0.0.1:8000/api/remolques/${id}`, {
+            const respuesta = await authFetch(`/remolques/${id}`, {
                 method: 'DELETE'
             });
 
@@ -282,7 +271,7 @@ export const FleetProvider = ({ children }) => {
     // ASIGNAR CONTRATO A CAMIÓN
     const assignContract = async (assignmentData) => {
         try {
-            const respuesta = await fetch('http://127.0.0.1:8000/api/assign-contract', {
+            const respuesta = await authFetch('/assign-contract', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(assignmentData)
@@ -306,7 +295,7 @@ export const FleetProvider = ({ children }) => {
     // VINCULAR REMOLQUES A CAMIONES
     const linkRemolque = async (camionId, remolqueId) => {
         try {
-            const respuesta = await authFetch(`http://127.0.0.1:8000/api/camiones/${camionId}/link-trailer`, {
+            const respuesta = await authFetch(`/camiones/${camionId}/link-trailer`, {
                 method: 'POST',
                 body: JSON.stringify({ remolque_id: remolqueId })
             });
@@ -323,7 +312,7 @@ export const FleetProvider = ({ children }) => {
 
     const unlinkRemolque = async (camionId) => {
         try {
-            const respuesta = await authFetch(`http://127.0.0.1:8000/api/camiones/${camionId}/unlink-trailer`, {
+            const respuesta = await authFetch(`/camiones/${camionId}/unlink-trailer`, {
                 method: 'POST'
             });
             const resultado = await respuesta.json();

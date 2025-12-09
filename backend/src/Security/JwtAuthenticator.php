@@ -31,12 +31,17 @@ class JwtAuthenticator extends AbstractAuthenticator
     // Leer header Authorization
     $authHeader = $request->headers->get('Authorization');
 
+    file_put_contents(__DIR__ . '/supports.log', date('Y-m-d H:i:s') . " - Method: " . $request->getMethod() . " - Header: " . ($authHeader ?? 'NULL') . "\n", FILE_APPEND);
+
     if (!$authHeader) {
         return false;
     }
 
     // Debe empezar por Bearer
-    return preg_match('/^Bearer\s+.+$/', $authHeader) === 1;
+    $isBearer = preg_match('/^Bearer\s+.+$/', $authHeader) === 1;
+    file_put_contents(__DIR__ . '/supports.log', date('Y-m-d H:i:s') . " - Is Bearer? " . ($isBearer ? 'YES' : 'NO') . "\n", FILE_APPEND);
+
+    return $isBearer;
 }
 
 

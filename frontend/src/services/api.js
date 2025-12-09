@@ -17,5 +17,11 @@ export const authFetch = async (endpoint, options = {}) => {
         headers
     });
 
+    if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/'; // Force reload to trigger App.jsx auth check
+        return response;
+    }
+
     return response;
 };

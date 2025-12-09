@@ -1,26 +1,8 @@
-import { useState, useEffect } from "react";
+import { useFleet } from "../context/FleetContext";
 import TarjetaRuta from "../components/TarjetaRuta";
 
 function RutasPage() {
-    const [contracts, setContracts] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetchContracts();
-    }, []);
-
-    const fetchContracts = async () => {
-        try {
-            const response = await fetch("http://localhost:8000/api/contracts");
-            if (!response.ok) throw new Error("Error fetching contracts");
-            const data = await response.json();
-            setContracts(data);
-        } catch (error) {
-            console.error("Error loading contracts:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { contracts, loading } = useFleet();
 
     if (loading) return <div className="p-8 text-center text-gray-500">Cargando rutas...</div>;
 

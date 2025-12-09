@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import { authFetch } from "../services/api";
 import ConfirmModal from "./ConfirmModal";
 import { RouteMap } from "./MapaRuta";
 import { useFleet } from "../context/FleetContext";
@@ -39,7 +40,8 @@ function ContractForm({ onClose, initialData = null }) {
                 deadline: initialData.deadline ? initialData.deadline.split('T')[0] : ""
             });
             // Fetch assignments for this contract
-            fetch(`http://localhost:8000/api/assign-contract/contract/${initialData.id}`)
+            // Fetch assignments for this contract
+            authFetch(`/assign-contract/contract/${initialData.id}`)
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) setAssignments(data);
@@ -72,7 +74,7 @@ function ContractForm({ onClose, initialData = null }) {
             setErrorMsg(result.error); // Show backend duplicate error
         } else {
             // Success, reload assignments
-            const res = await fetch(`http://localhost:8000/api/assign-contract/contract/${initialData.id}`);
+            const res = await authFetch(`/assign-contract/contract/${initialData.id}`);
             const data = await res.json();
             setAssignments(data);
             // Clear form
@@ -86,7 +88,7 @@ function ContractForm({ onClose, initialData = null }) {
         if (!assignmentToDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/assign-contract/${assignmentToDelete}`, {
+            const response = await authFetch(`/assign-contract/${assignmentToDelete.id}`, {
                 method: 'DELETE'
             });
             const data = await response.json();
@@ -184,15 +186,14 @@ function ContractForm({ onClose, initialData = null }) {
         e.preventDefault();
         console.log("Submitting contract data:", formData);
         const url = initialData
-            ? `http://localhost:8000/api/contracts/${initialData.id}`
-            : "http://localhost:8000/api/contracts";
+            ? `/contracts/${initialData.id}`
+            : "/contracts";
 
         const method = initialData ? "PUT" : "POST";
 
         try {
-            const response = await fetch(url, {
+            const response = await authFetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
 
@@ -210,7 +211,7 @@ function ContractForm({ onClose, initialData = null }) {
         if (!initialData) return;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/contracts/${initialData.id}`, {
+            const response = await authFetch(`/contracts/${initialData.id}`, {
                 method: "DELETE",
             });
 
@@ -617,7 +618,6 @@ function ContractForm({ onClose, initialData = null }) {
                                                 onClick={(e) => {
                                                     e.stopPropagation(); // Prevent navigation when deleting
                                                     setAssignmentToDelete(a);
-                                                    setIsDeleteModalOpen(true);
                                                 }}
                                                 style={{
                                                     background: 'none',

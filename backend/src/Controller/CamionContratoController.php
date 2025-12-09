@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CamionContratoController extends AbstractController
 {
     #[Route('', name: 'assign_contract_create', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function create(Request $request, EntityManagerInterface $entityManager, \App\Service\ServicioTiempoConduccion $servicioTiempo): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
@@ -25,7 +25,7 @@ class CamionContratoController extends AbstractController
         $fechaInicioStr = $data['fecha_inicio'] ?? null;
 
         if (!$camionId || !$contractId || !$fechaInicioStr) {
-            return $this->json(['success' => false, 'message' => 'Faltan datos'], 400);
+            return $this->json(['success' => false, 'message' => 'Faltan datos (camion_id, contract_id, fecha_inicio)'], 400);
         }
 
         $camion = $entityManager->getRepository(Camion::class)->find($camionId);
@@ -35,19 +35,7 @@ class CamionContratoController extends AbstractController
             return $this->json(['success' => false, 'message' => 'Camión o Contrato no encontrado'], 404);
         }
 
-        // Logic to calculate estimated end date
-        // Constants: Speed = 650km / 20 hours = 32.5 km/h
-        // Trips = ceil(TotalQuantity / TrailerCapacity)
-        // Distance = (Trips - 1) * 2 * Distance + Distance
-        // Time = Distance / 32.5
-        
-        $capacity = $camion->getRemolque() ? $camion->getRemolque()->getCapacidad() : 0;
-        
-        if ($capacity <= 0) {
-             return $this->json(['success' => false, 'message' => 'El camión no tiene remolque o capacidad válida'], 400);
-        }
-
-        // Check for existing assignment for this truck and contract
+        // Check for existing assignment
         $existing = $entityManager->getRepository(CamionContrato::class)->findOneBy([
             'camion' => $camion,
             'contract' => $contract
@@ -57,27 +45,20 @@ class CamionContratoController extends AbstractController
             return $this->json(['success' => false, 'message' => 'Este camión ya está asignado a este contrato'], 400);
         }
 
-        $trips = ceil($contract->getTotalQuantity() / $capacity);
-        $distanceOneWay = $contract->getDistanceKm() ?: 500; // Default fallback if distance is missing
-        
-        // Total distance including returns to pick up more cargo
-        $totalDistance = ($trips > 1) ? (($distanceOneWay * 2 * ($trips - 1)) + $distanceOneWay) : $distanceOneWay;
-        
-        $averageSpeedVal = 32.5;
-        $hoursNeeded = $totalDistance / $averageSpeedVal;
-        
-        $fechaInicio = new \DateTime($fechaInicioStr);
-        $fechaFin = clone $fechaInicio;
-        // Add hours to start date
-        // We convert hours to minutes to be safe
-        $minutesNeeded = (int)($hoursNeeded * 60);
-        $fechaFin->modify("+{$minutesNeeded} minutes");
+        try {
+            $fechaInicio = new \DateTime($fechaInicioStr);
+            $estimacion = $servicioTiempo->calcularEstimacion($contract, $camion, $fechaInicio);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['success' => false, 'message' => $e->getMessage()], 400);
+        } catch (\Exception $e) {
+            return $this->json(['success' => false, 'message' => 'Error calculando estimación: ' . $e->getMessage()], 500);
+        }
 
         $assignment = new CamionContrato();
         $assignment->setCamion($camion);
         $assignment->setContract($contract);
         $assignment->setFechaInicio($fechaInicio);
-        $assignment->setFechaFinEstimada($fechaFin);
+        $assignment->setFechaFinEstimada($estimacion['fecha_fin_estimada']);
         $assignment->setEstado('PROGRAMADO');
 
         $entityManager->persist($assignment);
@@ -85,7 +66,8 @@ class CamionContratoController extends AbstractController
 
         return $this->json([
             'success' => true,
-            'data' => $assignment
+            'data' => $assignment,
+            'estimacion' => $estimacion // Return details for frontend feedback if needed
         ]);
     }
 
