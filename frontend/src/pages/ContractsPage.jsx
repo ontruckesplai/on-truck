@@ -4,6 +4,21 @@ import TarjetaContrato from '../components/TarjetaContrato';
 import AssignTruckDrawer from '../components/AssignTruckDrawer';
 import './ContractsPage.css';
 
+
+//AUTOFECTH, LUEGO HAY QUE QUITAR EL CONTENT TYPE ETC!
+const authFetch = (url, options = {}) => {
+    const token = localStorage.getItem("token");
+
+    return fetch(url, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+            ...(options.headers || {})
+        }
+    });
+};
+
 const ContractsPage = () => {
     const [contracts, setContracts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,7 +34,7 @@ const ContractsPage = () => {
 
     const fetchContracts = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/contracts');
+            const response = await authFetch('http://localhost:8000/api/contracts');
             const data = await response.json();
             setContracts(data);
             setLoading(false);

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controller;
-
+use App\Service\ServicioCompatibilidadContratos;
 use App\Entity\Contract;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,7 +17,7 @@ class ContractController extends AbstractController
     public function index(EntityManagerInterface $em): JsonResponse
     {
         $contracts = $em->getRepository(Contract::class)->findAll();
-        
+
         $data = [];
         foreach ($contracts as $c) {
             $data[] = [
@@ -57,7 +57,7 @@ class ContractController extends AbstractController
             $contract->setTotalQuantity((int)($data['total_quantity'] ?? 0));
             $contract->setDeliveredQuantity((int)($data['delivered_quantity'] ?? 0));
             $contract->setProductType($data['product_type'] ?? 'General');
-            
+
             if (!empty($data['deadline'])) {
                 $contract->setDeadline(new \DateTime($data['deadline']));
             } else {
@@ -65,7 +65,7 @@ class ContractController extends AbstractController
             }
 
             $contract->setOriginAddress($data['origin_address'] ?? '');
-            
+
             // Handle nullable coordinates - Ensure empty strings become NULL
             $originLat = (isset($data['origin_lat']) && $data['origin_lat'] !== '') ? $data['origin_lat'] : null;
             $originLon = (isset($data['origin_lon']) && $data['origin_lon'] !== '') ? $data['origin_lon'] : null;
@@ -74,11 +74,11 @@ class ContractController extends AbstractController
 
             $contract->setOriginLat($originLat);
             $contract->setOriginLon($originLon);
-            
+
             $contract->setDestinationAddress($data['destination_address'] ?? '');
             $contract->setDestinationLat($destLat);
             $contract->setDestinationLon($destLon);
-            
+
             if (isset($data['status'])) {
                 $contract->setStatus($data['status']);
             } else {
@@ -88,9 +88,9 @@ class ContractController extends AbstractController
             // Calculate distance if coordinates are present
             if ($contract->getOriginLat() && $contract->getOriginLon() && $contract->getDestinationLat() && $contract->getDestinationLon()) {
                 $distance = $this->calculateDistance(
-                    $contract->getOriginLat(), 
-                    $contract->getOriginLon(), 
-                    $contract->getDestinationLat(), 
+                    $contract->getOriginLat(),
+                    $contract->getOriginLon(),
+                    $contract->getDestinationLat(),
                     $contract->getDestinationLon()
                 );
                 $contract->setDistanceKm($distance);
@@ -122,9 +122,9 @@ class ContractController extends AbstractController
         if (isset($data['delivered_quantity'])) $contract->setDeliveredQuantity((int)$data['delivered_quantity']);
         if (isset($data['product_type'])) $contract->setProductType($data['product_type']);
         if (isset($data['deadline'])) $contract->setDeadline(new \DateTime($data['deadline']));
-        
+
         if (isset($data['origin_address'])) $contract->setOriginAddress($data['origin_address']);
-        
+
         // Handle coordinates update - allow setting to null
         if (array_key_exists('origin_lat', $data)) {
             $val = $data['origin_lat'];
@@ -134,9 +134,9 @@ class ContractController extends AbstractController
             $val = $data['origin_lon'];
             $contract->setOriginLon(($val !== null && $val !== '') ? $val : null);
         }
-        
+
         if (isset($data['destination_address'])) $contract->setDestinationAddress($data['destination_address']);
-        
+
         if (array_key_exists('destination_lat', $data)) {
             $val = $data['destination_lat'];
             $contract->setDestinationLat(($val !== null && $val !== '') ? $val : null);
@@ -156,9 +156,9 @@ class ContractController extends AbstractController
 
         if ($originLat && $originLon && $destinationLat && $destinationLon) {
              $distance = $this->calculateDistance(
-                $originLat, 
-                $originLon, 
-                $destinationLat, 
+                $originLat,
+                $originLon,
+                $destinationLat,
                 $destinationLon
             );
             $contract->setDistanceKm($distance);
@@ -192,7 +192,7 @@ class ContractController extends AbstractController
         try {
             // OSRM expects: lon,lat;lon,lat
             $url = "http://router.project-osrm.org/route/v1/driving/$lon1,$lat1;$lon2,$lat2?overview=false";
-            
+
             // Log the URL for debugging
             error_log("Calculating distance URL: " . $url);
 
@@ -201,10 +201,10 @@ class ContractController extends AbstractController
                     "header" => "User-Agent: FleetManagementApp/1.0\r\n"
                 ]
             ];
-            
+
             $context = stream_context_create($options);
             $response = @file_get_contents($url, false, $context);
-            
+
             if ($response) {
                 $data = json_decode($response, true);
                 if (isset($data['routes'][0]['distance'])) {
@@ -223,4 +223,27 @@ class ContractController extends AbstractController
 
         return null;
     }
+//compatible?
+    #[Route('/api/contratos/validar', methods: ['POST'])]
+public function validarContrato(
+    Request $request,
+    ServicioCompatibilidadContratos $servicio
+): JsonResponse {
+    $data = json_decode($request->getContent(), true);
+
+    $distancia = (float) $data['distanciaKm'];
+    $kg = (float) $data['kgTotales'];
+    $cap = (float) $data['capacidadRemolque'];
+    $plazo = (float) $data['plazoHoras'];
+
+    $resultado = $servicio->puedeCumplirseContratoSolo(
+        $distancia,
+        $kg,
+        $cap,
+        $plazo
+    );
+
+    return new JsonResponse($resultado);
+}
+
 }
