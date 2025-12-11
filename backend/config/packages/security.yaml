@@ -43,5 +43,6 @@ security:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/verify, roles: PUBLIC_ACCESS }
+        - { path: ^/api/reset, roles: PUBLIC_ACCESS } # 🔹 NUEVO
         # Todo lo demás requiere autenticación completa
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

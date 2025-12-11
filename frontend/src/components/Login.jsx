@@ -1,6 +1,7 @@
 import { useState } from "react";
+import './AuthPage.css';
 
-function Login({ setUser }) {
+function Login({ setUser, onForgot }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // Error de login
@@ -46,9 +47,26 @@ function Login({ setUser }) {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        style={{ marginBottom: "1rem" }}
+        style={{ marginBottom: "0.5rem" }}
       />
+
       <button type="submit">Iniciar sesión</button>
+
+      {/* Botón “Olvidé mi contraseña” */}
+      <button 
+        type="button" 
+        onClick={onForgot} 
+        style={{ 
+          marginTop: "0.8rem", 
+          background: "none", 
+          color: "#1e90ff", 
+          border: "none", 
+          cursor: "pointer",
+          textDecoration: "underline"
+        }}
+      >
+        Olvidé mi contraseña
+      </button>
     </form>
   );
 }
