@@ -32,6 +32,11 @@ class RegisterController extends AbstractController
             return new JsonResponse(['error' => 'Email, password, firstName and lastName are required'], 400);
         }
 
+        $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $data['email']]);
+        if ($existingUser) {
+            return new JsonResponse(['error' => 'El usuario ya está registrado'], 400);
+        }
+
         $user = new User();
         $user->setEmail($data['email']);
         $user->setRoles(['ROLE_USER']);
@@ -58,8 +63,19 @@ class RegisterController extends AbstractController
                 $emailMessage = (new Email())
                     ->from('no-reply@ontruck.com')
                     ->to($user->getEmail())
-                    ->subject('Código de verificación')
-                    ->text("Hola {$user->getFirstName()}, tu código de verificación es: {$verificationCode}");
+                    ->subject('Código de verificación On Truck')
+                    ->html("
+                        <div style='font-family: Arial, sans-serif; text-align: center; padding: 20px;'>
+                            <h1 style='color:#007bff; margin-bottom:20px;'>On Truck</h1>
+                            <h2 style='color:#007bff;'>¡Hola {$user->getFirstName()}!</h2>
+                            <p>Gracias por registrarte en <strong>On Truck</strong>.</p>
+                            <p>Tu código de verificación es:</p>
+                            <p style='font-size:24px; font-weight:bold; color:#28a745;'>{$verificationCode}</p>
+                            <p style='margin-top:30px; font-size:14px; color:#555;'>
+                                Si no has solicitado este correo, ignóralo.
+                            </p>
+                        </div>
+                    ");
 
                 $mailer->send($emailMessage);
             } catch (\Exception $e) {

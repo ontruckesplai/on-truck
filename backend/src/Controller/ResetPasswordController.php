@@ -27,7 +27,7 @@ class ResetPasswordController extends AbstractController
         $this->hasher = $hasher;
     }
 
-    // Paso 1: enviar código al email
+    // Paso 1: enviar código
     #[Route('/request', name: 'request', methods: ['POST'])]
     public function request(Request $request): JsonResponse
     {
@@ -48,7 +48,7 @@ class ResetPasswordController extends AbstractController
         $user->setVerificationCode($code);
         $this->em->flush();
 
-        // Enviar correo como en el register
+        // Enviar correo HTML igual que Register
         $dsn = $_ENV['MAILER_DSN'] ?? null;
         if ($dsn) {
             try {
@@ -58,12 +58,25 @@ class ResetPasswordController extends AbstractController
                 $emailMessage = (new Email())
                     ->from('no-reply@ontruck.com')
                     ->to($user->getEmail())
-                    ->subject('Código para restablecer contraseña')
-                    ->text("Hola {$user->getFirstName()}, tu código para restablecer la contraseña es: {$code}");
+                    ->subject('Restablecer contraseña - Código de verificación')
+                    ->html("
+                        <div style='font-family: Arial, sans-serif; text-align: center; padding: 20px;'>
+                            <h1 style='color:#007bff; margin-bottom:20px;'>On Truck</h1>
+                            <h2 style='color:#007bff;'>Hola {$user->getFirstName()}</h2>
+                            <p>Hemos recibido una solicitud para restablecer tu contraseña.</p>
+                            <p>Tu código de verificación es:</p>
+                            <p style='font-size:28px; font-weight:bold; color:#28a745;'>{$code}</p>
+
+                            <p style='margin-top:30px; font-size:14px; color:#555;'>
+                                Si no has solicitado este cambio, puedes ignorar este correo.
+                            </p>
+                        </div>
+                    ");
 
                 $mailer->send($emailMessage);
+
             } catch (\Exception $e) {
-                return new JsonResponse([
+                return $this->json([
                     'error' => 'Código generado pero no se pudo enviar el correo: '.$e->getMessage()
                 ], 500);
             }
@@ -92,7 +105,7 @@ class ResetPasswordController extends AbstractController
         return $this->json(['message' => 'Código verificado']);
     }
 
-    // Paso 3: cambiar contraseña
+    // Paso 3: actualizar contraseña
     #[Route('/update', name: 'update', methods: ['POST'])]
     public function update(Request $request): JsonResponse
     {
