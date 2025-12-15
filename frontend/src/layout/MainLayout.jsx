@@ -41,8 +41,11 @@ function MainLayout() {
                             <span>Admin</span>
                             {isDropdownOpen && (
                                 <div className="user-dropdown">
-                                    <button onClick={() => console.log("Login clicked")}>
-                                        Log in
+                                    <button onClick={() => {
+                                        localStorage.removeItem('token');
+                                        window.location.reload();
+                                    }}>
+                                        Log out
                                     </button>
                                 </div>
                             )}

@@ -24,12 +24,7 @@ function Sidebar() {
                 <NavLink to="/rutas" className={({ isActive }) => (isActive ? "active" : "")}>
                     Rutas
                 </NavLink>
-                <NavLink to="/conductores" className={({ isActive }) => (isActive ? "active" : "")}>
-                    Conductores
-                </NavLink>
-                <NavLink to="/configuracion" className={({ isActive }) => (isActive ? "active" : "")}>
-                    Configuración
-                </NavLink>
+
             </nav>
         </aside>
     );
