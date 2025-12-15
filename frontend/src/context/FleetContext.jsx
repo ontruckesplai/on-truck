@@ -4,11 +4,6 @@ import { authFetch } from "../services/api"; // Import centralized authFetch
 // Creamos el contexto para compartir los datos en toda la app
 const FleetContext = createContext();
 
-// Local authFetch removed in favor of imported one
-
-
-
-
 // Hook personalizado para usar el contexto más fácilmente
 export const useFleet = () => {
     const context = useContext(FleetContext);
@@ -169,6 +164,7 @@ export const FleetProvider = ({ children }) => {
         try {
             const respuesta = await authFetch('/camiones', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(nuevoVehiculo)
             });
             const resultado = await respuesta.json();
@@ -189,6 +185,7 @@ export const FleetProvider = ({ children }) => {
         try {
             const respuesta = await authFetch(`/camiones/${id}`, {
                 method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datosActualizados)
             });
             const resultado = await respuesta.json();
@@ -224,6 +221,7 @@ export const FleetProvider = ({ children }) => {
         try {
             const respuesta = await authFetch('/remolques', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(nuevoRemolque)
             });
             const remolqueCreado = await respuesta.json();
@@ -242,6 +240,7 @@ export const FleetProvider = ({ children }) => {
         try {
             const respuesta = await authFetch(`/remolques/${id}`, {
                 method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datosActualizados)
             });
             const remolqueActualizado = await respuesta.json();
@@ -297,6 +296,7 @@ export const FleetProvider = ({ children }) => {
         try {
             const respuesta = await authFetch(`/camiones/${camionId}/link-trailer`, {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ remolque_id: remolqueId })
             });
             const resultado = await respuesta.json();

@@ -1,24 +1,36 @@
-/* BLOQUEAR SCROLL */
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  height: 100%;
-  font-family: Arial, sans-serif;
+/* ================================================= */
+/* 1. RESET Y BASE */
+/* ================================================= */
+* {
+  box-sizing: border-box;
 }
 
-/* CONTENEDOR PRINCIPAL */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  /* Bloquear scroll */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ================================================= */
+/* 2. CONTENEDOR Y FONDO */
+/* ================================================= */
 .auth-container {
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #0a3d62;
+  overflow: hidden;
+  padding: 20px;
 }
 
-/* VIDEO DE FONDO */
 .auth-video {
   position: absolute;
   top: 0;
@@ -26,24 +38,40 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(6px);
+  filter: blur(4px) brightness(0.7);
   z-index: 0;
 }
 
-/* CAJA LOGIN/REGISTER */
+/* ================================================= */
+/* 3. CAJA PRINCIPAL (GLASSMORPHISM) */
+/* ================================================= */
 .auth-box {
   position: relative;
   z-index: 1;
-  width: 420px;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 3rem;
-  border-radius: 16px;
-  border: 3px solid #1e90ff;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 420px;
+
+  /* Fondo semitransparente borroso */
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* PADDING AJUSTADO para ahorrar espacio vertical */
+  padding: 1.3rem 2.5rem 2.1rem 2.5rem;
+
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+
+  /* Espacio entre logo y formulario */
+  gap: 0.9rem;
+
+  animation: fadeIn 1.5s ease-out;
 }
 
 /* LOGO */
@@ -51,124 +79,136 @@ html, body {
   display: flex;
   justify-content: center;
   width: 100%;
+  margin: 0;
 }
 
 .auth-logo {
-  width: 100px;
-  height: 100px;
-  border-radius: 12px;
-  object-fit: cover;
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
 }
 
-/* FORMULARIOS */
+.auth-logo:hover {
+  transform: scale(1.05);
+}
+
+/* ================================================= */
+/* 4. FORMULARIOS */
+/* ================================================= */
 .auth-form {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  /* Espacio aumentado entre elementos */
+  gap: 1.5rem;
 }
 
-/* INPUTS */
+/* ⚠️ SOLUCIÓN AVANZADA CSS para los campos Nombre y Apellido */
+/* Seleccionamos el formulario dentro de AuthPage, que contiene todos los campos */
+.auth-form form {
+  display: flex;
+  /* Hacemos el formulario un contenedor flexible */
+  flex-wrap: wrap;
+  /* Permitimos que los elementos se envuelvan */
+  gap: 1.0rem;
+  /* El mismo espacio que el resto del formulario */
+}
+
+/* Aplicamos estilo para que los dos primeros DIVs (Nombre y Apellido) compartan línea */
+.auth-form form>.form-group:nth-child(1),
+.auth-form form>.form-group:nth-child(2) {
+  flex: 1 1 calc(50% - 0.75rem);
+  /* Ocupa casi el 50% menos la mitad del gap */
+  min-width: 100px;
+  /* Evita que se encojan demasiado */
+}
+
+/* Los demás form-group (Correo, Contraseña) deben ocupar el 100% de la fila */
+.auth-form form>.form-group:nth-child(n+3) {
+  flex-basis: 100%;
+}
+
+/* ---------------------------------------------------- */
+/* AJUSTES PARA LOGIN/REGISTER SIN DIVS EXTRA (AuthPage.jsx) */
+/* ---------------------------------------------------- */
+/* Si el formulario no usa .form-group (como en tu Login), se aplica el gap directo */
+.auth-form>* {
+  margin-bottom: 0;
+}
+
+
+/* INPUTS ESTÁNDAR */
 .auth-form input {
   width: 100%;
-  padding: 0.9rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
+  border: 2px solid #e1e5eb;
+  background-color: #f8f9fa;
+  font-size: 0.95rem;
+  color: #333;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.auth-form input::placeholder {
+  color: #aaa;
+}
+
+.auth-form input:focus {
+  border-color: #1e90ff;
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(30, 144, 255, 0.1);
 }
 
 /* BOTÓN PRINCIPAL */
-.auth-form button {
+.auth-form button,
+.verification-group button {
   width: 100%;
   padding: 1rem;
-  background-color: #1e90ff;
+  background: linear-gradient(135deg, #1e90ff 0%, #0069d9 100%);
   color: white;
   font-size: 1rem;
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(30, 144, 255, 0.3);
 }
 
-.auth-form button:hover {
-  background-color: #187bcd;
+.auth-form button:hover,
+.verification-group button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 144, 255, 0.4);
 }
 
-/* TEXTO INFERIOR */
-.auth-footer {
-  margin-top: 1rem;
-  text-align: center;
+.auth-form button:active,
+.verification-group button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(30, 144, 255, 0.3);
 }
 
-.auth-footer p {
-  font-size: 0.9rem;
-  color: #333;
-}
-
-.auth-link {
-  background: none;
-  border: none;
-  color: #1e90ff;
-  cursor: pointer;
-  font-weight: 600;
-  padding: 0;
-  margin: 0;
-  text-decoration: underline;
-}
-
-.auth-link:hover {
-  color: #187bcd;
-}
-
-/* FOOTER INFERIOR */
-.auth-bottom-footer {
+/* MENSAJE DE VERIFICACIÓN */
+.verification-group {
   display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: #999;
-  margin-top: 1.5rem;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
 }
 
-.auth-bottom-footer a {
-  color: #1e90ff;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
 
-.auth-bottom-footer a:hover {
-  color: #0056b3;
-}
-
-.auth-bottom-footer span {
-  color: #999;
-}
-
-/* RESPONSIVE */
-@media (max-width: 450px) {
-  .auth-box {
-    width: 90%;
-    padding: 2rem;
-  }
-
-  .auth-logo {
-    width: 80px;
-    height: 80px;
-  }
-}
-
-/* CAMPOS SEPARADOS */
-.form-group {
-  margin-bottom: 1rem;
-}
-
-/* TÉRMINOS Y CONDICIONES */
+/* ================================================= */
+/* 5. TÉRMINOS Y CONDICIONES */
+/* ================================================= */
 .terms-row {
+  /* La fila de términos siempre debe ocupar 100% */
+  flex-basis: 100%;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.8rem;
+  /* Lo ajusto al nuevo gap de 1rem que usamos en el form */
+  margin-top: -0.5rem;
 }
 
 .terms-label {
@@ -180,33 +220,54 @@ html, body {
   white-space: nowrap;
 }
 
+.terms-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #1e90ff;
+  border-radius: 2px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.terms-label input[type="checkbox"]:checked {
+  background-color: #1e90ff;
+  border-color: #1e90ff;
+}
+
 .terms-label a {
   color: #1e90ff;
   text-decoration: underline;
 }
 
+/* BOTÓN DESPLEGABLE (RESTAURADO A TU ESTILO) */
 .toggle-terms {
-  width: 16px;              /* igual que el checkbox */
+  width: 16px;
   height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #1e90ff; /* azul como el borde del checkbox */
+  background-color: #1e90ff;
   border: 1px solid #1e90ff;
   border-radius: 2px;
   cursor: pointer;
   padding: 0;
+  transition: background-color 0.3s;
 }
 
 .toggle-terms span {
-  color: white;             /* flecha blanca dentro */
-  font-size: 10px;          /* tamaño proporcional */
+  color: white;
+  font-size: 10px;
   line-height: 1;
 }
 
-
 .toggle-terms:hover {
-  background-color: rgba(30, 144, 255, 0.1);
+  background-color: #187bcd;
+  /* Un azul ligeramente más oscuro */
 }
 
 .terms-error {
@@ -216,12 +277,162 @@ html, body {
 }
 
 .terms-box {
+  position: relative;
   background-color: #f9f9f9;
   border: 1px solid #ccc;
   padding: 1rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
-  max-height: 200px;
-  overflow-y: auto;
   border-radius: 8px;
+
+  /* Limitar a 3 líneas */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* mostrar solo 3 líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Flecha desplegable */
+.terms-box::after {
+  content: '▼';
+  /* flecha hacia abajo */
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+/* Cuando el usuario haga click (clase expandida) */
+.terms-box.expanded {
+  -webkit-line-clamp: unset;
+  /* quitar límite de líneas */
+  overflow-y: auto;
+  /* mostrar scroll si es necesario */
+}
+
+.terms-box.expanded::after {
+  content: '▲';
+  /* flecha hacia arriba */
+}
+
+/* ================================================= */
+/* 6. FOOTERS */
+/* ================================================= */
+
+/* FOOTER INFERIOR (LOGIN/REGISTER TOGGLE) */
+.auth-footer {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.auth-footer p {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0;
+}
+
+.auth-link {
+  background: none;
+  border: none;
+  color: #1e90ff;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  margin-left: 5px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-link:hover {
+  color: #004a99;
+  text-decoration: underline;
+}
+
+/* FOOTER LEGAL (Texto Blanco sobre el Video) */
+.auth-bottom-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  font-size: 0.8rem;
+  color: #fff;
+  margin-top: 1.5rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.auth-bottom-footer a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.auth-bottom-footer a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.auth-bottom-footer span {
+  opacity: 0.5;
+}
+
+
+/* ================================================= */
+/* 7. RESPONSIVE */
+/* ================================================= */
+@media (max-width: 480px) {
+  .auth-box {
+    padding: 2rem 1.5rem;
+    width: 100%;
+  }
+
+  .auth-logo {
+    width: 70px;
+  }
+
+  .auth-form input {
+    font-size: 16px;
+  }
+
+  /* En móvil, volvemos a poner todos los campos en columna (100% de ancho) */
+  .auth-form form {
+    flex-direction: column;
+    gap: 0;
+    /* Dejamos que los margenes de los .form-group hagan el trabajo */
+  }
+
+  /* Los .form-group se apilan y ocupan 100% de la fila */
+  .auth-form form>.form-group,
+  .auth-form form>.form-group:nth-child(1),
+  .auth-form form>.form-group:nth-child(2) {
+    flex-basis: 100%;
+  }
+
+  /* Como los .form-group ya tienen margen por defecto, anulamos el gap del form, pero nos aseguramos que se vea bien*/
+  .auth-form form>.form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  /* Removemos el margen del último form-group antes de términos/botón */
+  .auth-form form>.form-group:last-of-type {
+    margin-bottom: 0;
+  }
+}
+
+/* ANIMACIÓN */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

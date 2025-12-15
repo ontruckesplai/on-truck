@@ -1,3 +1,5 @@
+# config/packages/security.yaml
+
 security:
     password_hashers:
         App\Entity\User:
@@ -18,17 +20,29 @@ security:
             pattern: ^/api
             stateless: true
             provider: app_user_provider
-            lazy: true
             custom_authenticators:
                 - App\Security\JwtAuthenticator
 
         main:
-            lazy: true
             provider: app_user_provider
+            # login form para backend si necesitas interfaz web
+            # Quitar lazy y user_checker porque tu Symfony no los soporta
+            form_login:
+                login_path: /login
+                check_path: /login
+                # opcional: default_target_path: /dashboard
+
+            logout:
+                path: /logout
+                invalidate_session: true
 
     access_control:
-        - { path: ^/api/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        # Rutas públicas
         - { path: ^/api/contratos/simular, roles: PUBLIC_ACCESS }
         - { path: ^/api/contratos/validar, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/verify, roles: PUBLIC_ACCESS }
+        - { path: ^/api/reset, roles: PUBLIC_ACCESS } # 🔹 NUEVO
+        # Todo lo demás requiere autenticación completa
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

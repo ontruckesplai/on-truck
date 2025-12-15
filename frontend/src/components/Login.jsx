@@ -1,6 +1,7 @@
 import { useState } from "react";
+import './AuthPage.css';
 
-function Login({ setUser }) {
+function Login({ setUser, onForgot }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // Error de login
@@ -8,9 +9,6 @@ function Login({ setUser }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-  // 🚨 BORRAR TOKEN ANTIGUO PARA EVITAR USO DE JWT CADUCADO
-
-      localStorage.removeItem("token");
 
     try {
       const res = await fetch("http://localhost:8000/api/login", {
@@ -24,9 +22,7 @@ function Login({ setUser }) {
       if (!res.ok) {
         setError("Correo o contraseña incorrecto");
       } else {
-        const token_user =data.token;
-        //localStorage.setItem("token", data.token);
-        localStorage.setItem("token", token_user);
+        localStorage.setItem("token", data.token);
         setUser({ email });
       }
     } catch (err) {
@@ -51,9 +47,26 @@ function Login({ setUser }) {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        style={{ marginBottom: "1rem" }}
+        style={{ marginBottom: "0.5rem" }}
       />
+
       <button type="submit">Iniciar sesión</button>
+
+      {/* Botón “Olvidé mi contraseña” */}
+      <button 
+        type="button" 
+        onClick={onForgot} 
+        style={{ 
+          marginTop: "0.8rem", 
+          background: "none", 
+          color: "#1e90ff", 
+          border: "none", 
+          cursor: "pointer",
+          textDecoration: "underline"
+        }}
+      >
+        Olvidé mi contraseña
+      </button>
     </form>
   );
 }
