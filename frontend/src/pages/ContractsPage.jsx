@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import ContractForm from '../components/ContractForm';
 import TarjetaContrato from '../components/TarjetaContrato';
 import AssignTruckDrawer from '../components/AssignTruckDrawer';
@@ -12,6 +13,19 @@ const ContractsPage = () => {
     const [assigningContract, setAssigningContract] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("todos");
+    const location = useLocation();
+
+    // Scroll to contract if passed in state
+    useEffect(() => {
+        if (!loading && location.state?.contractId) {
+            const element = document.getElementById(`contract-${location.state.contractId}`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.classList.add('highlight-contract');
+                setTimeout(() => element.classList.remove('highlight-contract'), 2000);
+            }
+        }
+    }, [loading, location.state, contracts]);
 
     // fetchContracts removed as it comes from context
 
@@ -83,12 +97,13 @@ const ContractsPage = () => {
             ) : (
                 <div className="contracts-grid">
                     {filteredContracts.map((contract) => (
-                        <TarjetaContrato
-                            key={contract.id}
-                            contract={contract}
-                            onClick={handleEditClick}
-                            onAssign={handleAssignClick}
-                        />
+                        <div id={`contract-${contract.id}`} key={contract.id} className="contract-card-wrapper">
+                            <TarjetaContrato
+                                contract={contract}
+                                onClick={handleEditClick}
+                                onAssign={handleAssignClick}
+                            />
+                        </div>
                     ))}
 
                     {filteredContracts.length === 0 && !loading && (
