@@ -322,6 +322,8 @@
     /* Reduced gap */
 }
 
+
+
 .btn-action {
     flex: 1;
     display: flex;
@@ -346,6 +348,7 @@
     background-color: var(--bg-secondary);
     color: var(--text-secondary);
     border: 1px solid transparent;
+    font-size: xx-small
 }
 
 .btn-action.secondary:hover {

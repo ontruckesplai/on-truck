@@ -245,7 +245,7 @@ function VehicleForm({ onClose, initialData = null }) {
                     value={formData.matricula}
                     onChange={handleInputChange}
                     required
-                    placeholder="0000-XXX"
+                    placeholder="R-0000-XXX"
                   />
                 </div>
               </div>

@@ -104,8 +104,8 @@ class CamionContrato implements \JsonSerializable
             'camion_id' => $this->camion?->getId(),
             'contract_id' => $this->contract?->getId(),
             'contract_client' => $this->contract?->getClientName(),
-            'fecha_inicio' => $this->fechaInicio?->format('Y-m-d H:i:s'),
-            'fecha_fin_estimada' => $this->fechaFinEstimada?->format('Y-m-d H:i:s'),
+            'fecha_inicio' => $this->fechaInicio?->format('Y-m-d\TH:i:s'),
+            'fecha_fin_estimada' => $this->fechaFinEstimada?->format('Y-m-d\TH:i:s'),
             'estado' => $this->estado,
         ];
     }

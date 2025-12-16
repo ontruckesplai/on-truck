@@ -4,11 +4,15 @@ import { authFetch } from "../services/api";
 import ConfirmModal from "./ConfirmModal";
 import { RouteMap } from "./MapaRuta";
 import { useFleet } from "../context/FleetContext";
+import { calculateTheoreticalProgress } from "../utils/contractUtils";
 import "./ContractForm.css";
 
 function ContractForm({ onClose, initialData = null }) {
     const navigate = useNavigate(); // Initialize hook
-    const { vehiculos, assignContract } = useFleet();
+    
+    // Get full contracts list to check global availability
+    const { vehiculos, contracts, assignContract, deleteContract, addContract, updateContract, deleteAssignment } = useFleet();
+    
     const [assignments, setAssignments] = useState([]);
     const [newAssignment, setNewAssignment] = useState({
         camion_id: "",
@@ -19,6 +23,7 @@ function ContractForm({ onClose, initialData = null }) {
     const [formData, setFormData] = useState({
         client_name: "",
         total_quantity: "",
+        delivered_quantity: 0, 
         product_type: "",
         deadline: "",
         origin_address: "",
@@ -32,23 +37,63 @@ function ContractForm({ onClose, initialData = null }) {
     const [suggestions, setSuggestions] = useState([]);
     const [activeField, setActiveField] = useState(null); // 'origin' or 'destination'
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    
+    // Live Progress State
+    const [theoreticalProgress, setTheoreticalProgress] = useState(0);
+
+    // Calculate globally busy trucks
+    // A truck is busy if it is assigned to ANY contract and that assignment is not 'COMPLETADO'
+    // We derive this from the global 'contracts' list which we know is up to date.
+    const busyTruckIds = new Set();
+    if (contracts) {
+        contracts.forEach(c => {
+            if (c.asignaciones) {
+                c.asignaciones.forEach(a => {
+                    // Normalize status check
+                    const status = a.estado ? a.estado.toUpperCase() : '';
+                    if (status !== 'COMPLETADO' && status !== 'CANCELADO') {
+                        const cId = a.camion_id || (a.camion && a.camion.id);
+                        if (cId) busyTruckIds.add(Number(cId));
+                    }
+                });
+            }
+        });
+    }
+    
+    // Debug logging
+    /*
+    console.log("Global Contracts:", contracts);
+    console.log("Vehicles:", vehiculos);
+    console.log("Busy IDs:", Array.from(busyTruckIds));
+    */
+
 
     useEffect(() => {
         if (initialData) {
             setFormData({
                 ...initialData,
+                delivered_quantity: initialData.delivered_quantity || 0, // Ensure it exists
                 deadline: initialData.deadline ? initialData.deadline.split('T')[0] : ""
             });
-            // Fetch assignments for this contract
             // Fetch assignments for this contract
             authFetch(`/assign-contract/contract/${initialData.id}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (Array.isArray(data)) setAssignments(data);
+                    if (Array.isArray(data)) {
+                        setAssignments(data);
+                        // Calculate initial theoretical progress
+                        // We need to construct a contract-like object with assignments
+                        const contractForCalc = { ...initialData, asignaciones: data };
+                        const theo = calculateTheoreticalProgress(contractForCalc, vehiculos);
+                        setTheoreticalProgress(theo);
+                        
+                        // Optional: If delivered_quantity is 0 but theoretical is > 0, maybe hint it?
+                        // For now we just calculate it for display.
+                    }
                 })
                 .catch(err => console.error("Error fetching assignments:", err));
         }
-    }, [initialData]);
+    }, [initialData, vehiculos]); // Depend on vehiculos to ensure we have capacity data
 
     const handleAssignmentChange = (e) => {
         setNewAssignment(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -74,6 +119,9 @@ function ContractForm({ onClose, initialData = null }) {
             setErrorMsg(result.error); // Show backend duplicate error
         } else {
             // Success, reload assignments
+            // Using context state would be cleaner, but existing pattern re-fetching is safer for now 
+            // to ensure we display EXACTLY what backend has (IDs etc).
+            // However, FleetContext is now updated too, so Card will update.
             const res = await authFetch(`/assign-contract/contract/${initialData.id}`);
             const data = await res.json();
             setAssignments(data);
@@ -88,16 +136,13 @@ function ContractForm({ onClose, initialData = null }) {
         if (!assignmentToDelete) return;
 
         try {
-            const response = await authFetch(`/assign-contract/${assignmentToDelete.id}`, {
-                method: 'DELETE'
-            });
-            const data = await response.json();
+            const success = await deleteAssignment(assignmentToDelete.id, initialData.id);
 
-            if (data.success) {
+            if (success) {
                 setAssignments(prev => prev.filter(a => a.id !== assignmentToDelete.id));
                 setAssignmentToDelete(null);
             } else {
-                alert(data.message || "Error al eliminar asignación");
+                alert("Error al eliminar asignación");
             }
         } catch (error) {
             console.error("Error deleting assignment:", error);
@@ -184,45 +229,31 @@ function ContractForm({ onClose, initialData = null }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Submitting contract data:", formData);
-        const url = initialData
-            ? `/contracts/${initialData.id}`
-            : "/contracts";
+        console.log("Submitting form...", formData);
+        
+        let result = null;
+        if (initialData) {
+            console.log("Updating contract...", initialData.id);
+            result = await updateContract(initialData.id, formData);
+        } else {
+            console.log("Creating contract...");
+            result = await addContract(formData);
+        }
 
-        const method = initialData ? "PUT" : "POST";
+        console.log("Result:", result);
 
-        try {
-            const response = await authFetch(url, {
-                method: method,
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                onClose(); // Close drawer and refresh list
-            } else {
-                alert("Error al guardar el contrato");
-            }
-        } catch (error) {
-            console.error("Error saving contract:", error);
+        if (result) {
+            onClose();
+        } else {
+            console.error("Save failed, result was null/false");
+            alert("Error al guardar el contrato. Revisa la consola.");
         }
     };
 
     const handleDelete = async () => {
         if (!initialData) return;
-
-        try {
-            const response = await authFetch(`/contracts/${initialData.id}`, {
-                method: "DELETE",
-            });
-
-            if (response.ok) {
-                onClose();
-            } else {
-                alert("Error al eliminar el contrato");
-            }
-        } catch (error) {
-            console.error("Error deleting contract:", error);
-        }
+        await deleteContract(initialData.id);
+        onClose();
     };
 
     return (
@@ -269,6 +300,8 @@ function ContractForm({ onClose, initialData = null }) {
                             />
                         </div>
                     </div>
+
+
 
                     <div className="form-group">
                         <label>Fecha Límite</label>
@@ -344,6 +377,52 @@ function ContractForm({ onClose, initialData = null }) {
                         </div>
                     )}
 
+
+
+                    {/* Progress Slider (Relocated) */}
+                    {initialData && (
+                        <div className="form-group" style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '2rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                <label>Progreso de Carga (Kg Entregados)</label>
+                                <span style={{ fontWeight: 700 }}>
+                                    {parseInt(formData.delivered_quantity || 0).toLocaleString('es-ES')} / {parseInt(formData.total_quantity || 0).toLocaleString('es-ES')} kg
+                                </span>
+                            </div>
+                            
+                            <input
+                                type="range"
+                                min="0"
+                                max={formData.total_quantity || 100}
+                                step="1000"
+                                name="delivered_quantity"
+                                value={formData.delivered_quantity || 0}
+                                onChange={handleChange}
+                                style={{ width: '100%', marginBottom: '0.5rem', accentColor: 'var(--accent-primary)' }}
+                            />
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                                    {Math.round(((formData.delivered_quantity || 0) / (formData.total_quantity || 1)) * 100)}% Completado
+                                </div>
+                                {theoreticalProgress > (formData.delivered_quantity || 0) && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, delivered_quantity: theoreticalProgress }))}
+                                        style={{
+                                            fontSize: '0.75rem',
+                                            background: 'rgba(59, 130, 246, 0.1)',
+                                            color: '#3b82f6',
+                                            border: '1px solid #3b82f6',
+                                            padding: '2px 8px',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        ⚡ Auto-Sincronizar ({parseInt(theoreticalProgress).toLocaleString()} kg)
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     )}
 
                     {/* --- Assignment Section (Only for existing contracts) --- */}
@@ -392,8 +471,10 @@ function ContractForm({ onClose, initialData = null }) {
                                         );
                                     }
 
-                                    // 4. Full Calculation (Existing logic)
-                                    const remainingCargo = Math.max(0, initialData.total_quantity - (initialData.delivered_quantity || 0));
+                                    // 4. Full Calculation (Dynamic based on Form Data)
+                                    const totalQty = formData.total_quantity ? parseFloat(formData.total_quantity) : 0;
+                                    const deliveredQty = formData.delivered_quantity ? parseFloat(formData.delivered_quantity) : 0;
+                                    const remainingCargo = Math.max(0, totalQty - deliveredQty);
                                     const distance = initialData.distance_km || 500;
                                     const speed = 60; // km/h
                                     const roundTripDistance = distance * 2;
@@ -650,9 +731,13 @@ function ContractForm({ onClose, initialData = null }) {
                                         <option value="">-- Seleccionar --</option>
                                         {vehiculos
                                             .filter(v => v.tipo === 'camion')
-                                            // Filter out trucks already assigned to this contract? Backend handles it, but nice to have.
-                                            // User requested "que no puedas ponerlo con el mismo camion".
-                                            // Filtering visually suggests availability.
+                                            // Filter out trucks already assigned to ANY contract (Status not 'COMPLETED')
+                                            .filter(v => {
+                                                // 1. Not in current contract list (already handled by next filter but good for clarity)
+                                                // 2. Not in ANY active assignment
+                                                const hasActiveAssignment = v.asignaciones && v.asignaciones.some(a => a.estado !== 'COMPLETADO' && a.estado !== 'CANCELADO');
+                                                return !hasActiveAssignment;
+                                            })
                                             .filter(v => !assignments.some(a => a.camion_id === v.id))
                                             .map(v => (
                                                 <option key={v.id} value={v.id}>

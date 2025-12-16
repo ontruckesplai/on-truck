@@ -122,7 +122,10 @@ export const FleetProvider = ({ children }) => {
 
     // Esta función decide si un camión está disponible o en taller
     const calcularEstadoCamion = (camion) => {
-        const kmParaRevision = (camion.kmUltimaRevision + 10000) - camion.kms;
+        // Si no tiene revisión registrada o es 0, asumimos que está al día (usamos sus kms actuales)
+        const kmUltima = camion.kmUltimaRevision ? camion.kmUltimaRevision : camion.kms;
+        // Intervalo de mantenimiento estimado: 50.000 km
+        const kmParaRevision = (kmUltima + 50000) - camion.kms;
 
         if (kmParaRevision < 1000) {
             return "Taller";
@@ -267,6 +270,82 @@ export const FleetProvider = ({ children }) => {
         }
     };
 
+    // CONTRATOS
+    const addContract = async (nuevoContrato) => {
+        try {
+            const respuesta = await authFetch('/contracts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(nuevoContrato)
+            });
+            const resultado = await respuesta.json(); // Assuming backend returns the created object directly or inside data
+
+            // Adjust based on typical backend response. Usually $this->jsonSuccess($contract) returns { success: true, data: {...} } or just JSON.
+            // Looking at CamionController it returns jsonSuccess.
+            // Let's assume standard response format.
+            if (resultado && (resultado.id || resultado.data)) {
+                 const contractData = resultado.data || resultado;
+                 setContracts(prev => [...prev, contractData]);
+                 return contractData;
+            }
+        } catch (error) {
+            console.error('Error al crear contrato:', error);
+        }
+        return null;
+    };
+
+    const updateContract = async (id, datosActualizados) => {
+        // 1. Optimistic Update: Update UI immediately
+        const previousContracts = [...contracts]; // Snapshot for rollback
+        
+        setContracts(prev => prev.map(c => 
+            c.id === id ? { ...c, ...datosActualizados } : c
+        ));
+
+        try {
+            console.log(`[FleetContext] Updating contract ${id} (Optimistic)`, datosActualizados);
+            const respuesta = await authFetch(`/contracts/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datosActualizados)
+            });
+            
+            const resultado = await respuesta.json();
+
+            if (resultado && (resultado.id || resultado.data)) {
+                // 2. Success: Update with confirm server data (in case server calculated something extra)
+                const contractData = resultado.data || resultado;
+                setContracts(prev => prev.map(c => c.id === id ? contractData : c));
+                return contractData;
+            } else {
+                 console.warn("[FleetContext] Update success check failed", resultado);
+                 // Revert on soft failure
+                 setContracts(previousContracts);
+                 return null;
+            }
+        } catch (error) {
+            console.error('Error al actualizar contrato:', error);
+            // Revert on hard failure
+            setContracts(previousContracts);
+            return null;
+        }
+    };
+
+    const deleteContract = async (id) => {
+        try {
+            const respuesta = await authFetch(`/contracts/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (respuesta.ok) {
+                setContracts(prev => prev.filter((c) => c.id !== id));
+            }
+        } catch (error) {
+            console.error('Error al eliminar contrato:', error);
+        }
+    };
+
+    // ASIGNAR CONTRATO A CAMIÓN
     // ASIGNAR CONTRATO A CAMIÓN
     const assignContract = async (assignmentData) => {
         try {
@@ -278,15 +357,65 @@ export const FleetProvider = ({ children }) => {
             const resultado = await respuesta.json();
 
             if (resultado.success) {
-                // Podríamos actualizar el vehículo localmente si quisiéramos mostrar el estado ocupado inmediato
-                // O recargar vehículos
-                return resultado.data;
+                // Update local contracts state
+                setContracts(prevContracts => prevContracts.map(contract => {
+                    // Use loose equality (==) or parseInt to skip type issues
+                    if (contract.id == assignmentData.contract_id) {
+                        const newAssignment = resultado.assignment || resultado.data;
+                        const existingAssignments = contract.asignaciones || [];
+                        // Avoid duplicates if any
+                        if (existingAssignments.some(a => a.id === newAssignment.id)) {
+                             return contract;
+                        }
+                        const newAssignmentsList = [...existingAssignments, newAssignment];
+                        return { ...contract, asignaciones: newAssignmentsList };
+                    }
+                    return contract;
+                }));
+                
+                // Update local vehicles state if needed (optional)
+                 setVehiculos(prev => prev.map(v => {
+                    if (v.id == assignmentData.camion_id) {
+                        return v; 
+                    }
+                    return v;
+                }));
+
+                return resultado.assignment || resultado.data;
             } else {
                 return { error: resultado.message };
             }
         } catch (error) {
             console.error('Error al asignar contrato:', error);
             return { error: "Error de conexión" };
+        }
+    };
+
+    const deleteAssignment = async (assignmentId, contractId) => {
+        try {
+            const respuesta = await authFetch(`/assign-contract/${assignmentId}`, {
+                method: 'DELETE'
+            });
+            const data = await respuesta.json();
+
+            if (data.success) {
+                // Update local contracts state
+                 setContracts(prevContracts => prevContracts.map(contract => {
+                    if (contract.id === contractId) {
+                        return { 
+                            ...contract, 
+                            asignaciones: contract.asignaciones.filter(a => a.id !== assignmentId) 
+                        };
+                    }
+                    return contract;
+                }));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Error al eliminar asignación:', error);
+            return false;
         }
     };
 
@@ -356,6 +485,10 @@ export const FleetProvider = ({ children }) => {
                 linkRemolque,
                 unlinkRemolque,
                 assignContract, // Export assignment function
+                deleteAssignment, // Export delete assignment function
+                addContract,
+                updateContract,
+                deleteContract,
 
 
                 // Funciones varias

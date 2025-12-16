@@ -65,8 +65,8 @@ class CamionController extends ApiController
         if (isset($data['kms'])) {
             $camion->setKms($data['kms']);
         }
-        if (isset($data['kmUltimaRevision'])) {
-            $camion->setKmUltimaRevision($data['kmUltimaRevision']);
+        if (isset($data['km_ultima_revision'])) {
+            $camion->setKmUltimaRevision($data['km_ultima_revision']);
         }
         if (isset($data['combustible'])) {
             $camion->setCombustible($data['combustible']);
@@ -74,8 +74,8 @@ class CamionController extends ApiController
         if (isset($data['cv'])) {
             $camion->setCv($data['cv']);
         }
-        if (isset($data['consumoMedio'])) {
-            $camion->setConsumoMedio($data['consumoMedio']);
+        if (isset($data['consumo_medio'])) {
+            $camion->setConsumoMedio($data['consumo_medio']);
         }
         if (isset($data['inicio'])) {
             $camion->setInicio($data['inicio']);

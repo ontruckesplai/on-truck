@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import MapaRuta from "./MapaRuta";
 import { useFleet } from "../context/FleetContext";
+import { calculateTheoreticalProgress } from "../utils/contractUtils";
+
 import "./TarjetaContrato.css";
 import "./MapaRuta.css"; // Ensure map modal styles are available
 
@@ -17,6 +19,20 @@ const IconoContrato = () => (
 function TarjetaContrato({ contract, onClick, onAssign }) {
     const { vehiculos } = useFleet();
     const [showMap, setShowMap] = useState(false);
+    
+    // Calculate live progress
+    const liveDelivered = useMemo(() => {
+        if (!vehiculos || vehiculos.length === 0) return contract.delivered_quantity || 0;
+        
+        // Calculate theoretical progress
+        const theoretical = calculateTheoreticalProgress(contract, vehiculos);
+        
+        // Use the greater of manual or theoretical
+        const currentStored = contract.delivered_quantity || 0;
+        return Math.max(currentStored, theoretical);
+    }, [contract, vehiculos]);
+
+
 
     const statusColors = {
         pending: { bg: "rgba(249, 115, 22, 0.1)", text: "#f97316", label: "Pendiente" },
@@ -26,20 +42,9 @@ function TarjetaContrato({ contract, onClick, onAssign }) {
 
     const statusStyle = statusColors[contract.status] || statusColors["pending"];
 
-    // Check for active assignment
-    const activeAssignment = contract.asignaciones?.find(a => a.estado !== 'COMPLETADO');
-    const linkedTruckName = activeAssignment ? (activeAssignment.camion_id || "Camión Asignado") : null;
-    // Note: The backend serialization of CamionContrato returns camion_id. 
-    // ideally we want the plate or model. Let's assume we might need to fetch it or context has it.
-    // Actually, FleetContext has all trucks. We can look it up.
-
-    // However, to keep it simple and fast without extra lookups if not needed:
-    // We will trust 'activeAssignment' exists. 
-    // To get the truck details properly, we might need to look into 'vehiculos' from context if we want the plate.
-    // usage of useFleet inside the item component is fine.
-
-
-
+    // Check for active assignments count
+    const activeAssignments = contract.asignaciones?.filter(a => a.estado !== 'COMPLETADO') || [];
+    const assignmentCount = activeAssignments.length;
 
     // Prepare data for MapaRuta
     const mapData = {
@@ -182,34 +187,28 @@ function TarjetaContrato({ contract, onClick, onAssign }) {
                         <div className="progress-header">
                             <span className="progress-label">Progreso Carga</span>
                             <span className="progress-value">
-                                {contract.delivered_quantity ? Math.round((contract.delivered_quantity / contract.total_quantity) * 100) : 0}%
+                                {Math.round((liveDelivered / contract.total_quantity) * 100)}%
                             </span>
                         </div>
                         <div className="aesthetic-bar-container">
                             <div
                                 className="aesthetic-bar-fill cargo"
                                 style={{
-                                    width: `${Math.min(100, ((contract.delivered_quantity || 0) / contract.total_quantity) * 100)}%`
+                                    width: `${Math.min(100, (liveDelivered / contract.total_quantity) * 100)}%`
                                 }}
                             ></div>
                         </div>
                         <div style={{ fontSize: '0.75rem', textAlign: 'right', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                            {contract.delivered_quantity?.toLocaleString('es-ES') || 0} / {contract.total_quantity?.toLocaleString('es-ES')} kg
+                            {liveDelivered.toLocaleString('es-ES')} / {contract.total_quantity?.toLocaleString('es-ES')} kg
                         </div>
                     </div>
                 </div>
 
                 <div className="tarjeta-actions">
-                    {activeAssignment ? (
-                        <div className="linked-truck-info">
-                            <span className="truck-icon">🚛</span>
-                            <div className="truck-details">
-                                <span className="truck-label">Vehículo Asignado</span>
-                                <span className="truck-value">
-                                    {/* Try to find truck in context, else show ID */}
-                                    {vehiculos.find(v => v.id === activeAssignment.camion_id)?.matricula || `ID: ${activeAssignment.camion_id}`}
-                                </span>
-                            </div>
+                    {assignmentCount > 0 ? (
+                        <div className="btn-action secondary">
+                            <span>🚛</span>
+                            {assignmentCount} {assignmentCount === 1 ? 'Camión Asignado' : 'Camiones Asignados'}
                         </div>
                     ) : (
                         <button className="btn-action secondary" onClick={(e) => { e.stopPropagation(); onAssign(contract); }}>

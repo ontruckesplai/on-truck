@@ -71,7 +71,8 @@ function VehiculosPage() {
     tipo: 'remolque',
     modelo: r.tipo,
     estado: 'Disponible'
-  })).sort((a, b) => {
+  })).filter(r => filterEstado === "todos" || r.estado === filterEstado)
+  .sort((a, b) => {
     const aLinked = linkedTrailerIds.has(a.id);
     const bLinked = linkedTrailerIds.has(b.id);
     if (aLinked && !bLinked) return -1;
