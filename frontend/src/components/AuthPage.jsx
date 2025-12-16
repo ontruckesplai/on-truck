@@ -122,8 +122,6 @@ function AuthPage({ setUser }) {
 
         {/* FOOTER INFERIOR CON LINKS LEGALES */}
         <div className="auth-bottom-footer">
-          <a href="/politica" target="_blank" rel="noopener noreferrer">Política</a>
-          <span>•</span>
           <a href="/privacidad" target="_blank" rel="noopener noreferrer">Privacidad</a>
           <span>•</span>
           <a href="/seguridad" target="_blank" rel="noopener noreferrer">Seguridad</a>

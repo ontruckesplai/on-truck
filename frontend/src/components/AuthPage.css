@@ -68,6 +68,9 @@ body {
   flex-direction: column;
   align-items: center;
 
+  /* AJUSTE CLAVE PARA COMPATIBILIDAD CON SCROLL INTERNO */
+  overflow: unset;
+
   /* Espacio entre logo y formulario */
   gap: 0.9rem;
 
@@ -100,8 +103,8 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  /* Espacio aumentado entre elementos */
-  gap: 1.5rem;
+  /* AJUSTE: Reducimos el gap para juntar los inputs de Login */
+  gap: 0.8rem;
 }
 
 /* ⚠️ SOLUCIÓN AVANZADA CSS para los campos Nombre y Apellido */
@@ -149,6 +152,7 @@ body {
   color: #333;
   transition: all 0.3s ease;
   outline: none;
+  margin-bottom: 0 !important;
 }
 
 .auth-form input::placeholder {
@@ -193,9 +197,52 @@ body {
 .verification-group {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.0rem;
   width: 100%;
 }
+
+/* --- AJUSTES PARA "OLVIDÉ MI CONTRASEÑA" (SOLUCIÓN FINAL) --- */
+
+/* 1. Contenedor para controlar la alineación (Alineado a la izquierda) */
+.forgot-password-text-container {
+  justify-content: flex-start;
+  /* Alineación a la izquierda */
+  display: flex;
+  width: 100%;
+
+  /* Ajuste de espaciado */
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* 2. El enlace de texto simple (Anulación de estilos de botón y ajuste de tamaño) */
+.forgot-password-text-link {
+  /* FUERZA BRUTA PARA ELIMINAR ESTILOS DEL BOTÓN PRINCIPAL */
+  width: auto !important;
+  padding: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+
+  /* Estilos de texto (más discreto y pequeño) */
+  color: #1e90ff !important;
+  font-size: 0.85rem !important;
+  /* Forzamos tamaño pequeño y discreto */
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+
+  /* Reseteo de transformaciones de hover/active */
+  transform: none !important;
+  transition: color 0.2s;
+}
+
+.forgot-password-text-link:hover {
+  color: #004a99;
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------- */
 
 
 /* ================================================= */
@@ -207,7 +254,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  /* Lo ajusto al nuevo gap de 1rem que usamos en el form */
+  /* Mantenemos el ajuste de margen (Ajusta este valor si tu .auth-form tiene un gap mayor) */
   margin-top: -0.5rem;
 }
 
@@ -244,7 +291,7 @@ body {
   text-decoration: underline;
 }
 
-/* BOTÓN DESPLEGABLE (RESTAURADO A TU ESTILO) */
+/* BOTÓN DESPLEGABLE */
 .toggle-terms {
   width: 16px;
   height: 16px;
@@ -267,7 +314,6 @@ body {
 
 .toggle-terms:hover {
   background-color: #187bcd;
-  /* Un azul ligeramente más oscuro */
 }
 
 .terms-error {
@@ -285,18 +331,16 @@ body {
   font-size: 0.85rem;
   border-radius: 8px;
 
-  /* Limitar a 3 líneas */
+  /* Limitar a 3 líneas (estado por defecto) */
   display: -webkit-box;
   -webkit-line-clamp: 3;
-  /* mostrar solo 3 líneas */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* Flecha desplegable */
-.terms-box::after {
+/* Flecha desplegable ELIMINADA por solicitud */
+/* .terms-box::after {
   content: '▼';
-  /* flecha hacia abajo */
   position: absolute;
   right: 1rem;
   bottom: 1rem;
@@ -305,26 +349,27 @@ body {
   background: rgba(255, 255, 255, 0.8);
   padding: 2px 4px;
   border-radius: 4px;
-}
+} */
 
 /* Cuando el usuario haga click (clase expandida) */
 .terms-box.expanded {
   -webkit-line-clamp: unset;
-  /* quitar límite de líneas */
+  /* Altura máxima para que el texto largo fuerce la aparición del scroll */
+  max-height: 200px;
   overflow-y: auto;
   /* mostrar scroll si es necesario */
 }
 
-.terms-box.expanded::after {
+/* .terms-box.expanded::after {
   content: '▲';
-  /* flecha hacia arriba */
-}
+} */
 
 /* ================================================= */
 /* 6. FOOTERS */
 /* ================================================= */
 
 /* FOOTER INFERIOR (LOGIN/REGISTER TOGGLE) */
+/* FOOTER INFERIOR (LOGIN/REGISTER TOGGLE) - Se mantiene igual */
 .auth-footer {
   margin-top: 0.5rem;
   text-align: center;
@@ -353,32 +398,49 @@ body {
   text-decoration: underline;
 }
 
-/* FOOTER LEGAL (Texto Blanco sobre el Video) */
+/* FOOTER LEGAL (Texto Blanco sobre el Video) - ESTA ES LA SECCIÓN A MODIFICAR */
 .auth-bottom-footer {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.8rem;
   font-size: 0.8rem;
-  color: #fff;
+
+  /* CAMBIO CLAVE: Color de texto oscuro para verlo sobre la caja blanca */
+  color: #555;
+
   margin-top: 1.5rem;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  /* Eliminamos el text-shadow ya que ahora está sobre un fondo claro */
+  text-shadow: none;
   z-index: 1;
 }
 
 .auth-bottom-footer a {
-  color: rgba(255, 255, 255, 0.9);
+  /* CAMBIO CLAVE: Color oscuro y transición para el hover */
+  color: #555;
   text-decoration: none;
-  transition: opacity 0.2s;
+  transition: transform 0.2s ease-out, color 0.2s;
+  /* Transición para subir y cambiar color */
+
+  /* Hacemos que sea un bloque para poder aplicar el transform */
+  display: inline-block;
 }
 
+/* EFECTO HOVER: Subir un poco y poner el color azul */
 .auth-bottom-footer a:hover {
+  color: #1e90ff;
+  /* Se pone azul al pasar el ratón */
+  transform: translateY(-3px);
+  /* Se mueve 3px hacia arriba */
+  text-decoration: none;
   opacity: 1;
-  text-decoration: underline;
+  /* Esto venía de antes, lo mantenemos */
 }
 
 .auth-bottom-footer span {
-  opacity: 0.5;
+  /* Separadores: los mantenemos grises claros */
+  color: #aaa;
+  opacity: 1;
 }
 
 

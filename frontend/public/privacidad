@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Privacidad</title>
@@ -33,7 +34,7 @@
             padding: 2rem 3rem;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
         }
 
         h1 {
@@ -53,16 +54,37 @@
     </div>
 
     <div class="content">
-        <h1>Política de Privacidad</h1>
+        <h1>POLÍTICA DE PRIVACIDAD</h1>
         <p>
-            La protección de tus datos personales es una prioridad. Toda la información que recopilamos es utilizada
-            únicamente para mejorar la plataforma y garantizar un servicio eficiente y seguro.
+            En <strong>OnTruck Esplai</strong>, nos comprometemos a proteger la privacidad de los usuarios y clientes
+            que utilizan nuestros servicios de gestión y control de flotas de camiones.
         </p>
+
+        <h2>1. Responsable del tratamiento</h2>
         <p>
-            No compartimos datos personales con terceros sin consentimiento previo, salvo en casos estrictamente
-            necesarios para cumplir con regulaciones legales.
+            Email: ontruck.esplai@gmail.com<br>
+            Teléfono: +34 623 286 109<br>
+            Horario: Lunes a Viernes de 09:00 a 18:00
+        </p>
+
+        <h2>2. Datos que recopilamos</h2>
+        <p>
+            Recopilamos datos personales como nombre, correo electrónico, teléfono y datos relacionados con
+            la flota de vehículos (ubicación, rutas, consumo y estado de los camiones).
+        </p>
+
+        <h2>3. Finalidad del tratamiento</h2>
+        <p>
+            Los datos se utilizan para gestionar flotas, mejorar la eficiencia del transporte,
+            ofrecer soporte al cliente y cumplir con obligaciones legales.
+        </p>
+
+        <h2>4. Derechos del usuario</h2>
+        <p>
+            El usuario puede solicitar el acceso, rectificación o eliminación de sus datos
+            enviando un correo a ontruck.esplai@gmail.com.
         </p>
     </div>
-
 </body>
+
 </html>

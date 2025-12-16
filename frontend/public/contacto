@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Contacto</title>
@@ -33,7 +34,7 @@
             background: white;
             padding: 2rem 3rem;
             border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
         }
 
         h1 {
@@ -60,7 +61,7 @@
     </div>
 
     <div class="content">
-        <h1>Contacto</h1>
+        <h1>POLÍTICA DE CONTACTO</h1>
         <p>
             Si necesitas asistencia o tienes alguna consulta, puedes contactarnos a través de los siguientes medios:
         </p>
@@ -73,4 +74,5 @@
     </div>
 
 </body>
+
 </html>

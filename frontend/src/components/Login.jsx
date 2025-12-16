@@ -47,26 +47,21 @@ function Login({ setUser, onForgot }) {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        style={{ marginBottom: "0.5rem" }}
+      // ELIMINAR ESTE ESTILO: style={{ marginBottom: "0.5rem" }}
       />
 
-      <button type="submit">Iniciar sesión</button>
+      {/* NUEVA POSICIÓN DEL ENLACE DE CONTRASEÑA OLVIDADA */}
+      <div className="forgot-password-text-container">
+        <button
+          type="button"
+          onClick={onForgot}
+          className="forgot-password-text-link" // <-- NUEVA CLASE
+        >
+          ¿Has olvidado tu contraseña?
+        </button>
+      </div>
 
-      {/* Botón “Olvidé mi contraseña” */}
-      <button 
-        type="button" 
-        onClick={onForgot} 
-        style={{ 
-          marginTop: "0.8rem", 
-          background: "none", 
-          color: "#1e90ff", 
-          border: "none", 
-          cursor: "pointer",
-          textDecoration: "underline"
-        }}
-      >
-        Olvidé mi contraseña
-      </button>
+      <button type="submit">Iniciar sesión</button>
     </form>
   );
 }

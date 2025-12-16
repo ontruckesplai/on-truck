@@ -52,14 +52,7 @@ function ForgotPassword({ onBack, onCodeSent }) {
 
       <button type="submit">Enviar código</button>
 
-      <button 
-        type="button" 
-        className="auth-link" 
-        onClick={onBack}
-        style={{ marginTop: "10px" }}
-      >
-        Volver
-      </button>
+
     </form>
   );
 }

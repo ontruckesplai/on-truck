@@ -143,13 +143,34 @@ function Register({ setUser, setIsLogin }) {
           )}
 
           {showTerms && (
-            <div className="terms-box">
+            <div className="terms-box expanded">
               <p>
-                Aquí van los términos y condiciones del servicio. Puedes incluir cualquier texto legal, cláusulas de uso,
-                protección de datos, etc.
+                Al registrarte en <strong>OnTruck Esplai</strong>, aceptas los presentes términos y condiciones.
+                El servicio está destinado a la gestión y control de flotas de camiones.
+              </p>
+
+              <p>
+                El usuario se compromete a proporcionar información veraz y a utilizar la plataforma
+                de forma responsable y conforme a la ley.
+              </p>
+
+              <p>
+                Los datos personales facilitados serán tratados de acuerdo con nuestra política de
+                privacidad y utilizados únicamente para la prestación del servicio.
+              </p>
+
+              <p>
+                OnTruck Esplai no se hace responsable de errores derivados de información incorrecta
+                proporcionada por el usuario ni de interrupciones técnicas del servicio.
+              </p>
+
+              <p>
+                La empresa se reserva el derecho de modificar estos términos cuando sea necesario.
+                El uso continuado del servicio implica la aceptación de dichas modificaciones.
               </p>
             </div>
           )}
+
 
           <button type="submit">Registrarse</button>
         </>
